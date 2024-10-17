@@ -1,20 +1,21 @@
 <script lang="ts">
 	import { buttonVariants } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
+	import * as Form from '$lib/components/ui/form';
+	import * as Select from '$lib/components/ui/select';
 	import { Input } from '$lib/components/ui/input';
 	import { toast } from 'svelte-sonner';
 	import type { Supplier } from '$lib/db/schema/supplier-schema';
-	import type { ProductCategory } from '$lib/db/schema/product-schema';
+	import type { Product, ProductCategory } from '$lib/db/schema/product-schema';
 	import { type SuperValidated, superForm } from 'sveltekit-superforms';
 	import { productSchema, type ProductSchema } from '$lib/validation';
 	import { zodClient } from 'sveltekit-superforms/adapters';
-	import * as Form from '$lib/components/ui/form';
-	import * as Select from '$lib/components/ui/select';
 	import type { SuperForm } from 'sveltekit-superforms';
 	import { Loader2 } from 'lucide-svelte';
 
-	let { data, categories, suppliers } = $props<{
+	let { data, product, categories, suppliers } = $props<{
 		data: SuperValidated<ProductSchema>;
+		product: Product;
 		categories: ProductCategory[];
 		suppliers: Supplier[];
 	}>();
@@ -25,7 +26,7 @@
 		validators: zodClient(productSchema),
 		onUpdated: ({ form: f }) => {
 			if (f.valid) {
-				toast.success(`Product added successfully`);
+				toast.success(`Product updated successfully`);
 				open = false;
 			}
 		}
@@ -33,25 +34,34 @@
 
 	const { form: formData, enhance, submitting, errors } = form;
 
+	$effect(() => {
+		formData.update(($formData) => ({
+			sku: product.sku,
+			name: product.name,
+			description: product.description,
+			categoryId: product.categoryId,
+			price: product.price,
+			supplierId: product.supplierId
+		}));
+	});
+
 	let selectedCategory = $state({
-		label: '',
-		value: $formData.categoryId
+		label: product.category.name,
+		value: product.categoryId
 	});
 
 	let selectedSupplier = $state({
-		label: '',
-		value: $formData.supplierId
+		label: product.supplier.name,
+		value: product.supplierId
 	});
 </script>
 
 <Dialog.Root bind:open>
-	<Dialog.Trigger class={buttonVariants({ variant: 'outline' })}>Add Product</Dialog.Trigger>
+	<Dialog.Trigger class={buttonVariants({ variant: 'outline' })}>Edit Product</Dialog.Trigger>
 	<Dialog.Content>
 		<Dialog.Header>
-			<Dialog.Title>Add New Product</Dialog.Title>
-			<Dialog.Description>
-				Fill in the details of the new product you want to add.
-			</Dialog.Description>
+			<Dialog.Title>Edit Product</Dialog.Title>
+			<Dialog.Description>Update the details of the product.</Dialog.Description>
 		</Dialog.Header>
 		<form method="POST" use:enhance class="space-y-4">
 			<Form.Field {form} name="sku">
