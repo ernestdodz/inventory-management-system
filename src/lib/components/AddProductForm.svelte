@@ -19,7 +19,7 @@
 		suppliers: Supplier[];
 	}>();
 
-	let open = $state(true);
+	let open = $state(false);
 
 	const form: SuperForm<ProductSchema> = superForm(data, {
 		validators: zodClient(productSchema),
@@ -130,7 +130,7 @@
 						}}
 					>
 						<Select.Trigger {...attrs}>
-							<Select.Value placeholder="Select a supplier" />
+							* <Select.Value placeholder="Select a supplier" />
 						</Select.Trigger>
 						<Select.Content>
 							{#each suppliers as supplier}
