@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 export const productSchema = z.object({
+	id: z.number().int().optional(),
 	sku: z.string().min(1),
 	name: z.string().min(1),
 	description: z.string().min(1),
@@ -10,3 +11,9 @@ export const productSchema = z.object({
 });
 
 export type ProductSchema = z.infer<typeof productSchema>;
+
+export const deleteProductsSchema = z.object({
+	productIds: z.array(z.number().int().positive())
+});
+
+export type DeleteProductsSchema = z.infer<typeof deleteProductsSchema>;

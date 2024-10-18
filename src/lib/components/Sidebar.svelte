@@ -8,33 +8,44 @@
 		Box,
 		BarChart2,
 		ChevronDown,
-		ChevronRight,
 		ChevronLeft
 	} from 'lucide-svelte';
 
 	const menuItems = [
 		{
 			name: 'Dashboard',
-			icon: LayoutDashboard
+			icon: LayoutDashboard,
+			path: '/'
 		},
 		{
 			name: 'Inventory',
 			icon: Package,
-			subItems: ['Products', 'Categories', 'Stock']
+			subItems: [
+				{ name: 'View All', path: '/inventory' },
+				{ name: 'Manage Products', path: '/manage-products' },
+				{ name: 'Manage Categories', path: '/manage-categories' }
+			]
 		},
 		{
 			name: 'Sales',
 			icon: ShoppingCart,
-			subItems: ['Orders', 'Customers']
+			subItems: [
+				{ name: 'Manage Orders', path: '/manage-orders' },
+				{ name: 'Manage Customers', path: '/manage-customers' }
+			]
 		},
 		{
 			name: 'Purchases',
 			icon: CreditCard,
-			subItems: ['Suppliers', 'Purchase Orders']
+			subItems: [
+				{ name: 'Manage Receiving', path: '/manage-receiving' },
+				{ name: 'Manage Suppliers', path: '/manage-suppliers' }
+			]
 		},
 		{
 			name: 'Reports',
-			icon: BarChart2
+			icon: BarChart2,
+			path: '/reports'
 		}
 	];
 
@@ -45,7 +56,7 @@
 	}
 </script>
 
-<div class="h-screen w-64 overflow-y-auto border-r border-gray-300 bg-gray-200">
+<div class="h-screen w-64 overflow-y-auto overflow-x-hidden border-r border-gray-300 bg-gray-100">
 	<div class="flex items-center justify-between border-b border-gray-300 px-5 py-8">
 		<div class="flex items-center">
 			<Box class="mr-2 h-6 w-6 text-gray-600" />
@@ -59,29 +70,32 @@
 	</div>
 	<nav class="mt-4 px-2">
 		{#each menuItems as item}
-			<div class="mb-1">
+			<div class="mb-2">
 				<Button
 					variant="ghost"
-					class="w-full justify-between px-4"
-					onclick={() => toggleExpand(item.name)}
+					class="w-full justify-between px-4 py-2 text-gray-700 transition-colors duration-200 hover:bg-gray-200 hover:text-gray-900"
+					href={item.path}
+					on:click={() => toggleExpand(item.name)}
 				>
 					<div class="flex items-center">
-						<item.icon class="h-4 w-4" />
-						<span class="ml-2">{item.name}</span>
+						<item.icon class="mr-2 h-5 w-5" />
+						<span class="font-medium">{item.name}</span>
 					</div>
 					{#if item.subItems && item.subItems.length > 0}
-						{#if expandedItem === item.name}
-							<ChevronDown class="h-4 w-4" />
-						{:else}
-							<ChevronRight class="h-4 w-4" />
-						{/if}
+						<ChevronDown
+							class={`h-4 w-4 ${expandedItem === item.name ? 'rotate-180 transform' : ''}`}
+						/>
 					{/if}
 				</Button>
 				{#if expandedItem === item.name && item.subItems}
-					<div class="ml-6 mt-1">
+					<div class="ml-4 mt-1 space-y-1">
 						{#each item.subItems as subItem}
-							<Button variant="ghost" class="w-full justify-start px-4 py-1 text-sm">
-								{subItem}
+							<Button
+								variant="ghost"
+								class="w-full justify-start px-4 py-2 text-sm text-gray-600 transition-colors duration-200 hover:bg-gray-200 hover:text-gray-900"
+								href={subItem.path}
+							>
+								{subItem.name}
 							</Button>
 						{/each}
 					</div>

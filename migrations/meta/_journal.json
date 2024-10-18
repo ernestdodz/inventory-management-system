@@ -50,6 +50,13 @@
       "when": 1729144552996,
       "tag": "0006_flashy_hairball",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1729223279077,
+      "tag": "0007_dear_baron_strucker",
+      "breakpoints": true
     }
   ]
 }
