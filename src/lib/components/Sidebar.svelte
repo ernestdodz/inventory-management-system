@@ -15,7 +15,7 @@
 		{
 			name: 'Dashboard',
 			icon: LayoutDashboard,
-			path: '/'
+			path: '/dashboard'
 		},
 		{
 			name: 'Inventory',

@@ -12,8 +12,10 @@ export const productSchema = z.object({
 
 export type ProductSchema = z.infer<typeof productSchema>;
 
-export const deleteProductsSchema = z.object({
-	productIds: z.array(z.number().int().positive())
+export const categorySchema = z.object({
+	id: z.number().int().optional(),
+	name: z.string().min(1),
+	status: z.boolean().default(true)
 });
 
-export type DeleteProductsSchema = z.infer<typeof deleteProductsSchema>;
+export type CategorySchema = z.infer<typeof categorySchema>;
