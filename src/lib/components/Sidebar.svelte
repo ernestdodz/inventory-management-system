@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
+	import { page } from '$app/stores';
 	import {
 		LayoutDashboard,
 		Package,
@@ -50,9 +50,22 @@
 	];
 
 	let expandedItem = $state(null as string | null);
+	let activePath = $state('/');
+
+	$effect(() => {
+		activePath = $page.url.pathname;
+	});
 
 	function toggleExpand(itemName: string) {
 		expandedItem = expandedItem === itemName ? null : itemName;
+	}
+
+	function isActive(item: (typeof menuItems)[number]) {
+		if (activePath === item.path) return true;
+		if (item.subItems) {
+			return item.subItems.some((subItem) => activePath === subItem.path);
+		}
+		return false;
 	}
 </script>
 
@@ -71,11 +84,11 @@
 	<nav class="mt-4 px-2">
 		{#each menuItems as item}
 			<div class="mb-2">
-				<Button
-					variant="ghost"
-					class="w-full justify-between px-4 py-2 text-gray-700 transition-colors duration-200 hover:bg-gray-200 hover:text-gray-900"
+				<a
+					class="flex w-full items-center justify-between px-4 py-2 text-gray-700 transition-colors duration-200 hover:bg-gray-200 hover:text-gray-900"
 					href={item.path}
-					on:click={() => toggleExpand(item.name)}
+					onclick={() => toggleExpand(item.name)}
+					class:active={isActive(item)}
 				>
 					<div class="flex items-center">
 						<item.icon class="mr-2 h-5 w-5" />
@@ -86,17 +99,17 @@
 							class={`h-4 w-4 ${expandedItem === item.name ? 'rotate-180 transform' : ''}`}
 						/>
 					{/if}
-				</Button>
+				</a>
 				{#if expandedItem === item.name && item.subItems}
 					<div class="ml-4 mt-1 space-y-1">
 						{#each item.subItems as subItem}
-							<Button
-								variant="ghost"
-								class="w-full justify-start px-4 py-2 text-sm text-gray-600 transition-colors duration-200 hover:bg-gray-200 hover:text-gray-900"
+							<a
+								class="block w-full px-4 py-2 text-sm text-gray-600 transition-colors duration-200 hover:bg-gray-200 hover:text-gray-900"
 								href={subItem.path}
+								class:active={activePath === subItem.path}
 							>
 								{subItem.name}
-							</Button>
+							</a>
 						{/each}
 					</div>
 				{/if}
@@ -104,3 +117,9 @@
 		{/each}
 	</nav>
 </div>
+
+<style>
+	.active {
+		@apply font-semibold text-blue-600;
+	}
+</style>
