@@ -1,6 +1,7 @@
 <script lang="ts">
 	import * as Table from '$lib/components/ui/table';
 	import * as Card from '$lib/components/ui/card';
+	import { Input } from '$lib/components/ui/input';
 	import { Search } from 'lucide-svelte';
 
 	// Fake data for demonstration
@@ -21,28 +22,31 @@
 	);
 </script>
 
-<div class="container mx-auto mt-12 px-4">
+<div class="container mx-auto mt-12">
+	<div
+		class="flex flex-col space-y-4 pb-6 sm:flex-row sm:items-center sm:justify-between sm:space-y-0"
+	>
+		<div>
+			<h1 class="text-2xl font-bold tracking-tight">Inventory Items</h1>
+			<p class="text-muted-foreground">Manage your product inventory</p>
+		</div>
+		<div class="relative">
+			<Search
+				class="absolute left-3 top-1/2 -translate-y-1/2 transform text-muted-foreground"
+				size={20}
+			/>
+			<Input
+				type="search"
+				placeholder="Search inventory..."
+				bind:value={searchQuery}
+				class="w-[250px] pl-10 sm:w-[300px]"
+			/>
+		</div>
+	</div>
+
 	<Card.Root>
-		<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-			<div>
-				<Card.Title class="text-3xl font-bold">Inventory Items</Card.Title>
-				<Card.Description>Manage your product inventory</Card.Description>
-			</div>
-			<div class="relative">
-				<Search
-					class="absolute left-3 top-1/2 -translate-y-1/2 transform text-gray-400"
-					size={20}
-				/>
-				<input
-					type="text"
-					placeholder="Search inventory..."
-					bind:value={searchQuery}
-					class="rounded-md border py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-				/>
-			</div>
-		</Card.Header>
 		<Card.Content>
-			<Table.Root>
+			<Table.Root class="overflow-hidden rounded-lg">
 				<Table.Header class="border-b border-gray-100/50 bg-primary">
 					<Table.Row>
 						<Table.Head class="text-primary-foreground">SKU</Table.Head>

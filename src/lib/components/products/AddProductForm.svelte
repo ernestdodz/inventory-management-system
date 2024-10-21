@@ -13,11 +13,13 @@
 	import type { SuperForm } from 'sveltekit-superforms';
 	import { Loader2 } from 'lucide-svelte';
 
-	let { data, categories, suppliers } = $props<{
+	interface Props {
 		data: SuperValidated<ProductSchema>;
 		categories: ProductCategory[];
 		suppliers: Supplier[];
-	}>();
+	}
+
+	let { data, categories, suppliers }: Props = $props();
 
 	let open = $state(false);
 
@@ -29,6 +31,8 @@
 				open = false;
 				selectedCategory = { label: '', value: 0 };
 				selectedSupplier = { label: '', value: 0 };
+
+				form.reset();
 			}
 		}
 	});
@@ -143,6 +147,7 @@
 								<Select.Content>
 									{#each suppliers as supplier}
 										<Select.Item value={supplier.id} label={supplier.name} />
+										{console.log(supplier)}
 									{/each}
 								</Select.Content>
 							</Select.Root>
@@ -155,7 +160,7 @@
 
 			<div class="flex justify-end space-x-2">
 				<Dialog.Close class={buttonVariants({ variant: 'outline' })}>Cancel</Dialog.Close>
-				<Form.Button>
+				<Form.Button type="submit">
 					{#if $submitting}
 						<Loader2 class="mr-2 h-4 w-4 animate-spin" />
 						Adding...

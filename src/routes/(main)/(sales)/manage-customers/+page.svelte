@@ -1,12 +1,11 @@
 <script lang="ts">
-	import AddCategoryForm from '$lib/components/categories/AddCategoryForm.svelte';
 	import * as Table from '$lib/components/ui/table';
 	import { Button } from '$lib/components/ui/button';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
 	import { Input } from '$lib/components/ui/input';
 	import { Search } from 'lucide-svelte';
+	import AddCustomerForm from '$lib/components/customers/AddCustomerForm.svelte';
 
-	// Fake data for customers
 	const customers = [
 		{ id: 1, name: 'John Doe', position: 'Manager' },
 		{ id: 2, name: 'Jane Smith', position: 'Developer' },
@@ -14,10 +13,7 @@
 		{ id: 4, name: 'Alice Brown', position: 'Sales Representative' }
 	];
 
-	// Fake form data
-	const formData = {
-		// Add any necessary form fields here
-	};
+	const { data } = $props();
 </script>
 
 <div class="container mx-auto mt-12 space-y-8">
@@ -35,7 +31,7 @@
 				<CardTitle>Add New Customer</CardTitle>
 			</CardHeader>
 			<CardContent>
-				<AddCategoryForm data={formData} />
+				<AddCustomerForm data={data.form} />
 			</CardContent>
 		</Card>
 

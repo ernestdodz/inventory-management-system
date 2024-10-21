@@ -1,106 +1,122 @@
 <script lang="ts">
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import * as Table from '$lib/components/ui/table';
-	import { Label } from '$lib/components/ui/label';
+	import { Card, CardContent } from '$lib/components/ui/card';
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
+	import AddSupplierForm from '$lib/components/suppliers/AddSupplierForm.svelte';
+	import EditSupplierForm from '$lib/components/suppliers/EditSupplierForm.svelte';
+	import DeleteSupplierModal from '$lib/components/suppliers/DeleteSupplierModal.svelte';
+	import type { Supplier } from '$lib/db/schema';
+	import { Search, Filter, ChevronLeft, ChevronRight } from 'lucide-svelte';
 
-	// Fake data for suppliers
-	let suppliers = [
-		{
-			id: 1,
-			name: 'Tech Solutions Inc.',
-			address: '123 Tech St, City',
-			phone: '123-456-7890',
-			email: 'contact@techsolutions.com'
-		},
-		{
-			id: 2,
-			name: 'Global Gadgets',
-			address: '456 Gadget Ave, Town',
-			phone: '987-654-3210',
-			email: 'info@globalgadgets.com'
-		},
-		{
-			id: 3,
-			name: 'Supply Masters',
-			address: '789 Supply Rd, Village',
-			phone: '456-789-0123',
-			email: 'hello@supplymasters.com'
-		}
-	];
+	const { data } = $props();
 
-	// Form data
-	let newSupplier = { name: '', address: '', phone: '', email: '' };
+	let selectedSuppliers = $state<Supplier[]>([]);
+	let isTableHovered = $state(false);
+	let currentPage = $state(1);
+	let totalPages = $state(Math.ceil(data.suppliers.length / 10));
 
-	function handleSubmit() {
-		if (newSupplier.name && newSupplier.address) {
-			suppliers = [...suppliers, { id: suppliers.length + 1, ...newSupplier }];
-			newSupplier = { name: '', address: '', phone: '', email: '' };
-		}
+	function toggleSupplierSelection(supplier: Supplier, checked: boolean) {
+		selectedSuppliers = checked
+			? (selectedSuppliers.push(supplier), selectedSuppliers)
+			: selectedSuppliers.filter((s) => s.id !== supplier.id);
+	}
+
+	function prevPage() {
+		if (currentPage > 1) currentPage--;
+	}
+
+	function nextPage() {
+		if (currentPage < totalPages) currentPage++;
 	}
 </script>
 
-<div class="container mx-auto mt-4">
-	<h1 class="mb-6 text-2xl font-bold">Manage Suppliers</h1>
-
-	<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-		<!-- Left column: Supplier creation form -->
-		<div class="space-y-4">
-			<h2 class="text-xl font-semibold">Add New Supplier</h2>
-			<form on:submit|preventDefault={handleSubmit} class="space-y-4">
-				<div class="space-y-2">
-					<Label for="supplier-name">Supplier Name</Label>
-					<Input id="supplier-name" bind:value={newSupplier.name} required />
-				</div>
-
-				<div class="space-y-2">
-					<Label for="supplier-address">Address</Label>
-					<Input id="supplier-address" bind:value={newSupplier.address} required />
-				</div>
-
-				<div class="space-y-2">
-					<Label for="supplier-phone">Phone</Label>
-					<Input id="supplier-phone" bind:value={newSupplier.phone} />
-				</div>
-
-				<div class="space-y-2">
-					<Label for="supplier-email">Email</Label>
-					<Input id="supplier-email" bind:value={newSupplier.email} type="email" />
-				</div>
-
-				<Button type="submit">Add Supplier</Button>
-			</form>
+<div class="container mx-auto mt-12">
+	<div class="mb-6">
+		<div class="flex items-center justify-between">
+			<div>
+				<h1 class="text-2xl font-bold">Supplier List ({data.suppliers.length})</h1>
+				<p class="text-sm text-muted-foreground">
+					Manage suppliers (Server side table functionalities.)
+				</p>
+			</div>
+			<div class="flex items-center gap-2">
+				{#if selectedSuppliers.length > 0}
+					<DeleteSupplierModal {selectedSuppliers} onSelect={() => (selectedSuppliers = [])} />
+				{/if}
+				<AddSupplierForm data={data.addForm} />
+			</div>
 		</div>
+	</div>
 
-		<!-- Right column: Suppliers list -->
-		<div>
-			<h2 class="mb-4 text-xl font-semibold">Suppliers List</h2>
-			<Table.Root>
-				<Table.Header>
-					<Table.Row>
-						<Table.Head>Name</Table.Head>
-						<Table.Head>Address</Table.Head>
-						<Table.Head>Phone</Table.Head>
-						<Table.Head>Email</Table.Head>
-						<Table.Head>Actions</Table.Head>
-					</Table.Row>
-				</Table.Header>
-				<Table.Body>
-					{#each suppliers as supplier}
+	<Card>
+		<CardContent>
+			<div class="flex items-center gap-4">
+				<div class="relative w-64">
+					<Input type="text" placeholder="Search name..." class="pl-8" />
+					<Search class="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+				</div>
+				<Button variant="outline" class="flex items-center gap-2">
+					<Filter class="h-4 w-4" />
+					Gender
+				</Button>
+				<Button variant="outline">Country</Button>
+				<Button variant="outline">Company</Button>
+			</div>
+
+			<div role="table" onmouseenter={() => (isTableHovered = true)}>
+				<Table.Root>
+					<Table.Header>
 						<Table.Row>
-							<Table.Cell>{supplier.name}</Table.Cell>
-							<Table.Cell>{supplier.address}</Table.Cell>
-							<Table.Cell>{supplier.phone}</Table.Cell>
-							<Table.Cell>{supplier.email}</Table.Cell>
-							<Table.Cell>
-								<Button variant="outline" size="sm">Edit</Button>
-								<Button variant="outline" size="sm">Delete</Button>
-							</Table.Cell>
+							<Table.Head class="w-[50px]" />
+							<Table.Head>Name</Table.Head>
+							<Table.Head>Email</Table.Head>
+							<Table.Head>Address</Table.Head>
+							<Table.Head>Phone</Table.Head>
+							<Table.Head>Actions</Table.Head>
 						</Table.Row>
-					{/each}
-				</Table.Body>
-			</Table.Root>
+					</Table.Header>
+					<Table.Body>
+						{#each data.suppliers as supplier}
+							<Table.Row>
+								<Table.Cell>
+									{#if isTableHovered}
+										<Checkbox
+											checked={selectedSuppliers.includes(supplier)}
+											onCheckedChange={(checked) =>
+												toggleSupplierSelection(supplier, checked as boolean)}
+										/>
+									{/if}
+								</Table.Cell>
+								<Table.Cell>{supplier.name}</Table.Cell>
+								<Table.Cell>{supplier.email}</Table.Cell>
+								<Table.Cell>{supplier.address}</Table.Cell>
+								<Table.Cell>{supplier.phone}</Table.Cell>
+								<Table.Cell>
+									<!-- <EditSupplierForm {supplier} data={data.editForm} /> -->
+								</Table.Cell>
+							</Table.Row>
+						{/each}
+					</Table.Body>
+				</Table.Root>
+			</div>
+		</CardContent>
+	</Card>
+
+	<div class="mt-4 flex items-center justify-between">
+		<div>
+			Showing {(currentPage - 1) * 10 + 1} to {Math.min(currentPage * 10, data.suppliers.length)}
+			of {data.suppliers.length} entries
+		</div>
+		<div class="flex items-center gap-2">
+			<Button variant="outline" on:click={prevPage} disabled={currentPage === 1}>
+				<ChevronLeft class="h-4 w-4" />
+			</Button>
+			<span>Page {currentPage} of {totalPages}</span>
+			<Button variant="outline" on:click={nextPage} disabled={currentPage === totalPages}>
+				<ChevronRight class="h-4 w-4" />
+			</Button>
 		</div>
 	</div>
 </div>

@@ -13,7 +13,6 @@
 		CardDescription
 	} from '$lib/components/ui/card';
 
-	// Fake data for customers and products
 	let customers = ['Claire Blake', 'John Doe', 'Jane Smith', 'Michael Johnson', 'Emily Brown'];
 	let products = [
 		'Chips (big) | 11762968',

@@ -38,6 +38,7 @@ export const actions: Actions = {
 			return fail(401, { form, message: 'Unauthorized' });
 		}
 
+		console.log('Adding Product:', form.data);
 		try {
 			await db.insert(products).values({ ...form.data, userId: session?.user.id });
 			console.log('New Product Added:');

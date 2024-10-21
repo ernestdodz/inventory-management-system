@@ -57,6 +57,20 @@
       "when": 1729223279077,
       "tag": "0007_dear_baron_strucker",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1729300553041,
+      "tag": "0008_remarkable_jean_grey",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1729403181097,
+      "tag": "0009_numerous_reaper",
+      "breakpoints": true
     }
   ]
 }

@@ -30,7 +30,7 @@
 			name: 'Sales',
 			icon: ShoppingCart,
 			subItems: [
-				{ name: 'Manage Orders', path: '/manage-orders' },
+				{ name: 'Manage Sales', path: '/manage-sales' },
 				{ name: 'Manage Customers', path: '/manage-customers' }
 			]
 		},
@@ -39,6 +39,7 @@
 			icon: CreditCard,
 			subItems: [
 				{ name: 'Manage Receiving', path: '/manage-receiving' },
+				{ name: 'Manage Orders', path: '/manage-orders' },
 				{ name: 'Manage Suppliers', path: '/manage-suppliers' }
 			]
 		},

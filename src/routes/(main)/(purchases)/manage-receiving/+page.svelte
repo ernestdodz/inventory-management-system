@@ -1,106 +1,115 @@
 <script lang="ts">
-	// Import necessary components and functions
-	import { onMount } from 'svelte';
-	import { Checkbox } from '$lib/components/ui/checkbox';
 	import * as Table from '$lib/components/ui/table';
+	import { Label } from '$lib/components/ui/label';
+	import { Input } from '$lib/components/ui/input';
+	import { Button } from '$lib/components/ui/button';
+	import * as Select from '$lib/components/ui/select';
+	import {
+		Card,
+		CardContent,
+		CardFooter,
+		CardHeader,
+		CardTitle,
+		CardDescription
+	} from '$lib/components/ui/card';
 
-	// Updated dummy data with price
-	let receivedItems = [
-		{
-			id: 1,
-			productName: 'Item 1',
-			quantity: 10,
-			price: 19.99,
-			receivedDate: '2023-04-15',
-			supplier: 'Supplier A'
-		},
-		{
-			id: 2,
-			productName: 'Item 2',
-			quantity: 5,
-			price: 24.99,
-			receivedDate: '2023-04-16',
-			supplier: 'Supplier B'
-		},
-		{
-			id: 3,
-			productName: 'Item 3',
-			quantity: 15,
-			price: 14.99,
-			receivedDate: '2023-04-17',
-			supplier: 'Supplier C'
-		}
-	];
+	// Fake data for purchase orders and products
+	let purchaseOrders = ['PO-001', 'PO-002', 'PO-003', 'PO-004', 'PO-005'];
 
-	let selectedItems = $state<(typeof receivedItems)[0][]>([]);
-	let isTableHovered = $state(false);
-
-	function toggleItemSelection(item: (typeof receivedItems)[0], checked: boolean) {
-		selectedItems = checked
-			? (selectedItems.push(item), selectedItems)
-			: selectedItems.filter((s) => s.id !== item.id);
-	}
-
-	onMount(async () => {
-		// Fetch received items data here
-		// receivedItems = await fetchReceivedItems();
+	let selectedPO = $state({
+		label: '',
+		value: ''
 	});
+
+	let receivingItems = [
+		{ name: 'Powdered Milk', sku: '11762969', orderedQty: 10, receivedQty: 0, remainingQty: 10 },
+		{ name: 'Chips (big)', sku: '11762968', orderedQty: 15, receivedQty: 5, remainingQty: 10 },
+		{ name: 'Soda', sku: '11762970', orderedQty: 20, receivedQty: 0, remainingQty: 20 }
+	];
 </script>
 
-<div class="container mx-auto mt-4">
-	<div class="my-2 flex items-center justify-between">
-		<h1 class="text-2xl font-bold">Manage Receiving</h1>
-		<div class="flex items-center gap-2">
-			{#if selectedItems.length > 0}
-				<!-- Add DeleteReceivedItemModal component here -->
-				<button class="rounded bg-red-500 px-2 py-1 text-white">Delete Selected</button>
-			{/if}
-			<div class="flex-shrink-0">
-				<!-- Add AddReceivedItemForm component here -->
-				<button class="rounded bg-green-500 px-2 py-1 text-white">Add Received Item</button>
-			</div>
-		</div>
-	</div>
+<div class="container mx-auto mt-4 space-y-6">
+	<h1 class="mb-4 text-2xl font-bold">Manage Receiving</h1>
 
-	<div role="table" onmouseenter={() => (isTableHovered = true)}>
-		<Table.Root>
-			<Table.Caption>A list of all received items.</Table.Caption>
-			<Table.Header>
-				<Table.Row>
-					<Table.Head class="w-[50px]" />
-					<Table.Head>ID</Table.Head>
-					<Table.Head>Product Name</Table.Head>
-					<Table.Head>Quantity</Table.Head>
-					<Table.Head>Price</Table.Head>
-					<Table.Head>Received Date</Table.Head>
-					<Table.Head>Supplier</Table.Head>
-					<Table.Head>Actions</Table.Head>
-				</Table.Row>
-			</Table.Header>
-			<Table.Body>
-				{#each receivedItems as item}
+	<Card>
+		<CardHeader>
+			<CardTitle>Select Purchase Order</CardTitle>
+			<CardDescription>Choose a purchase order to process receiving.</CardDescription>
+		</CardHeader>
+		<CardContent>
+			<div class="flex items-end space-x-2">
+				<div class="flex-grow">
+					<Label for="po-select" class="mb-2 block">Purchase Order</Label>
+					<Select.Root
+						selected={selectedPO}
+						onSelectedChange={(v) => {
+							if (v) {
+								selectedPO = {
+									label: v.label ?? '',
+									value: v.value
+								};
+							}
+						}}
+					>
+						<Select.Trigger id="po-select" class="w-full">
+							<Select.Value placeholder="Select purchase order" />
+						</Select.Trigger>
+						<Select.Content>
+							{#each purchaseOrders as po}
+								<Select.Item value={po} label={po} />
+							{/each}
+						</Select.Content>
+					</Select.Root>
+				</div>
+				<Button on:click={() => []} class="w-32">Load PO</Button>
+			</div>
+		</CardContent>
+	</Card>
+
+	<!-- Receiving Items Card -->
+	<Card>
+		<CardHeader>
+			<CardTitle>Receiving Items</CardTitle>
+		</CardHeader>
+		<CardContent>
+			<Table.Root>
+				<Table.Header>
 					<Table.Row>
-						<Table.Cell>
-							{#if isTableHovered}
-								<Checkbox
-									checked={selectedItems.includes(item)}
-									onCheckedChange={(checked) => toggleItemSelection(item, checked as boolean)}
-								/>
-							{/if}
-						</Table.Cell>
-						<Table.Cell>{item.id}</Table.Cell>
-						<Table.Cell>{item.productName}</Table.Cell>
-						<Table.Cell>{item.quantity}</Table.Cell>
-						<Table.Cell>${item.price.toFixed(2)}</Table.Cell>
-						<Table.Cell>{item.receivedDate}</Table.Cell>
-						<Table.Cell>{item.supplier}</Table.Cell>
-						<Table.Cell>
-							<!-- Add EditReceivedItemForm component here -->
-							<button class="mr-2 rounded bg-blue-500 px-2 py-1 text-white">Edit</button>
-						</Table.Cell>
+						<Table.Head>Product</Table.Head>
+						<Table.Head class="text-right">Ordered Qty</Table.Head>
+						<Table.Head class="text-right">Received Qty</Table.Head>
+						<Table.Head class="text-right">Remaining Qty</Table.Head>
+						<Table.Head>Action</Table.Head>
 					</Table.Row>
-				{/each}
-			</Table.Body>
-		</Table.Root>
-	</div>
+				</Table.Header>
+				<Table.Body>
+					{#each receivingItems as item, index}
+						<Table.Row>
+							<Table.Cell>
+								<div>{item.name}</div>
+								<div class="text-sm text-gray-500">{item.sku}</div>
+							</Table.Cell>
+							<Table.Cell class="text-right">{item.orderedQty}</Table.Cell>
+							<Table.Cell class="text-right">
+								<Input
+									type="number"
+									value={item.receivedQty}
+									min="0"
+									max={item.orderedQty}
+									class="w-20 text-right"
+								/>
+							</Table.Cell>
+							<Table.Cell class="text-right">{item.remainingQty}</Table.Cell>
+							<Table.Cell>
+								<Button variant="outline" size="sm" on:click={() => {}}>Receive</Button>
+							</Table.Cell>
+						</Table.Row>
+					{/each}
+				</Table.Body>
+			</Table.Root>
+		</CardContent>
+		<CardFooter class="flex justify-end">
+			<Button class="w-32">Complete Receiving</Button>
+		</CardFooter>
+	</Card>
 </div>

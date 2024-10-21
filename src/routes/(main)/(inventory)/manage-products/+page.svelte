@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import * as Table from '$lib/components/ui/table';
-	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
+	import { Card, CardContent } from '$lib/components/ui/card';
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
 	import AddProductForm from '$lib/components/products/AddProductForm.svelte';
@@ -33,43 +33,44 @@
 </script>
 
 <div class="container mx-auto mt-12">
-	<Card>
-		<CardHeader>
-			<div class="flex items-center justify-between">
-				<div>
-					<CardTitle class="text-2xl font-bold">Product List ({data.products.length})</CardTitle>
-					<p class="text-sm text-muted-foreground">
-						Manage products (Server side table functionalities.)
-					</p>
-				</div>
-				<div class="flex items-center gap-2">
-					{#if selectedProducts.length > 0}
-						<DeleteProductModal {selectedProducts} onSelect={() => (selectedProducts = [])} />
-					{/if}
-					<AddProductForm
-						data={data.addForm}
-						categories={data.categories}
-						suppliers={data.suppliers}
-					/>
-				</div>
+	<div class="mb-6">
+		<div class="flex items-center justify-between">
+			<div>
+				<h1 class="text-2xl font-bold">Product List ({data.products.length})</h1>
+				<p class="text-sm text-muted-foreground">
+					Manage products (Server side table functionalities.)
+				</p>
 			</div>
-		</CardHeader>
+			<div class="flex items-center gap-2">
+				{#if selectedProducts.length > 0}
+					<DeleteProductModal {selectedProducts} onSelect={() => (selectedProducts = [])} />
+				{/if}
+				<AddProductForm
+					data={data.addForm}
+					categories={data.categories}
+					suppliers={data.suppliers}
+				/>
+			</div>
+		</div>
+	</div>
+
+	<Card>
 		<CardContent>
-			<div class="mb-4 flex items-center gap-4">
+			<div class="flex items-center gap-4">
 				<div class="relative w-64">
 					<Input type="text" placeholder="Search name..." class="pl-8" />
 					<Search class="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
 				</div>
 				<Button variant="outline" class="flex items-center gap-2">
 					<Filter class="h-4 w-4" />
-					Filter
+					Gender
 				</Button>
-				<Button variant="outline">Category</Button>
-				<Button variant="outline">Price Range</Button>
+				<Button variant="outline">Country</Button>
+				<Button variant="outline">Company</Button>
 			</div>
+
 			<div role="table" onmouseenter={() => (isTableHovered = true)}>
 				<Table.Root>
-					<Table.Caption>A list of all products.</Table.Caption>
 					<Table.Header>
 						<Table.Row>
 							<Table.Head class="w-[50px]" />
@@ -115,10 +116,11 @@
 			</div>
 		</CardContent>
 	</Card>
+
 	<div class="mt-4 flex items-center justify-between">
 		<div>
-			Showing {(currentPage - 1) * 10 + 1} to {Math.min(currentPage * 10, data.products.length)} of {data
-				.products.length} entries
+			Showing {(currentPage - 1) * 10 + 1} to {Math.min(currentPage * 10, data.products.length)}
+			of {data.products.length} entries
 		</div>
 		<div class="flex items-center gap-2">
 			<Button variant="outline" on:click={prevPage} disabled={currentPage === 1}>
