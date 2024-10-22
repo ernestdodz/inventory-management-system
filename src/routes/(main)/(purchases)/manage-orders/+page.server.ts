@@ -17,7 +17,7 @@ export const load: PageServerLoad = async ({ cookies }) => {
 	const existingOrder = getPurchaseOrder(cookies);
 
 	const orderItems = await db.query.purchaseOrderItems.findMany({
-		where: eq(purchaseOrderItems.purchaseOrderId, existingOrder.id),
+		where: eq(purchaseOrderItems.purchaseOrderId, existingOrder?.id ?? 0),
 		with: {
 			product: true
 		}
@@ -48,7 +48,6 @@ export const actions: Actions = {
 				(await db
 					.insert(purchaseOrders)
 					.values({
-						sessionId: 'temp-session',
 						supplierId: form.data.supplierId,
 						status: 'draft'
 					})
@@ -86,7 +85,7 @@ export const actions: Actions = {
 		}
 		try {
 			await db.insert(purchaseOrders).values({
-				sessionId: 'temp-session',
+				poCode: 'PO-XY12',
 				orderDate: new Date(),
 				supplierId: form.data.supplierId,
 				status: 'pending'
@@ -101,9 +100,10 @@ export const actions: Actions = {
 };
 
 const getPurchaseOrder = (cookies: Cookies) => {
-	const existingOrder = JSON.parse(
-		cookies.get('purchase_order_session') ?? '{}'
-	) as PurchaseOrderItemCookie;
+	const orderCookie = cookies.get('purchase_order_session');
+	const existingOrder: PurchaseOrderItemCookie | undefined = orderCookie
+		? JSON.parse(orderCookie)
+		: undefined;
 
 	return existingOrder;
 };

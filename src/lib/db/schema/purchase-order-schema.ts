@@ -17,7 +17,7 @@ export const purchaseOrders = pgTable('purchase_order', {
 		.notNull()
 		.references(() => suppliers.id),
 	orderDate: timestamp('order_date'),
-	sessionId: varchar('session_id', { length: 255 }).notNull(),
+	poCode: varchar('po_code', { length: 20 }),
 	status: purchaseOrderStatusEnum('status').notNull().default('draft')
 });
 

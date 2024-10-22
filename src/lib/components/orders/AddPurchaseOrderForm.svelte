@@ -37,7 +37,7 @@
 			if (f.valid) {
 				toast.success(`Purchase order added successfully`);
 				selectedProduct = { label: '', value: 0 };
-				$formData.supplierId = existingOrder.supplierId;
+				$formData.supplierId = existingOrder?.supplierId ?? 0;
 			} else {
 				toast.error(`Failed to add purchase order`);
 			}
@@ -46,22 +46,23 @@
 
 	const { form: formData, enhance, submitting } = form;
 
-	let selectedSupplier = $state({
-		label: existingOrder.supplierId ? suppliers[existingOrder.supplierId].name : '',
-		value: existingOrder.supplierId ?? 0
-	});
 	// let selectedSupplier = $state({
-	// 	label: '',
-	// 	value: 0
+	// 	label: existingOrder ? suppliers[existingOrder.supplierId].name : '',
+	// 	value: existingOrder?.supplierId ?? 0
 	// });
+	let selectedSupplier = $state({
+		label: existingOrder ? suppliers.find((s) => s.id === existingOrder.supplierId)?.name : '',
+		value: existingOrder?.supplierId ?? 0
+	});
 	let selectedProduct = $state({
 		label: '',
 		value: 0
 	});
-	console.log(existingOrder.supplierId);
+	console.log(existingOrder);
+	// console.log(suppliers.find((s) => s.id === existingOrder?.supplierId));
 
 	$effect(() => {
-		$formData.supplierId = existingOrder.supplierId;
+		$formData.supplierId = existingOrder?.supplierId ?? 0;
 	});
 </script>
 
@@ -90,6 +91,7 @@
 										$formData.supplierId = v.value;
 									}
 								}}
+								disabled={existingOrder?.supplierId !== undefined}
 							>
 								<Select.Trigger {...attrs} class="w-full">
 									<Select.Value placeholder="Select supplier" />
