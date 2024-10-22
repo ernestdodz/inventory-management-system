@@ -10,18 +10,23 @@
 	import { toast } from 'svelte-sonner';
 	import { Loader2 } from 'lucide-svelte';
 
-	let { data } = $props<{
+	interface Props {
 		data: SuperValidated<SupplierSchema>;
-	}>();
+	}
+
+	const { data }: Props = $props();
 
 	let open = $state(false);
 
 	const form: SuperForm<SupplierSchema> = superForm(data, {
 		validators: zodClient(supplierSchema),
-		onUpdated: ({ form: f }) => {
-			if (f.valid) {
+		onResult: ({ result }) => {
+			if (result.type === 'success') {
 				toast.success(`Supplier added successfully`);
 				open = false;
+				form.reset();
+			} else {
+				toast.error('asaasa');
 			}
 		}
 	});
@@ -74,7 +79,7 @@
 			</Form.Field>
 			<div class="flex justify-end space-x-2">
 				<Dialog.Close class={buttonVariants({ variant: 'outline' })}>Cancel</Dialog.Close>
-				<Form.Button>
+				<Form.Button type="submit">
 					{#if $submitting}
 						<Loader2 class="mr-2 h-4 w-4 animate-spin" />
 						Adding...

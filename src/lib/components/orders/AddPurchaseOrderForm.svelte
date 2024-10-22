@@ -11,40 +11,57 @@
 	import { Loader2 } from 'lucide-svelte';
 	import * as Select from '$lib/components/ui/select';
 	import { type SuperValidated, superForm } from 'sveltekit-superforms';
-	import { purchaseOrderSchema, type PurchaseOrderSchema } from '$lib/validation';
+	import {
+		purchaseOrderItemSchema,
+		type PurchaseOrderItemSchema,
+		type PurchaseOrderItemCookie
+	} from '$lib/validation';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import type { SuperForm } from 'sveltekit-superforms';
 	import type { Supplier, Product } from '$lib/db/schema';
+
 	import { toast } from 'svelte-sonner';
 
 	interface Props {
-		data: SuperValidated<PurchaseOrderSchema>;
+		data: SuperValidated<PurchaseOrderItemSchema>;
 		suppliers: Supplier[];
 		products: Product[];
+		existingOrder: PurchaseOrderItemCookie;
 	}
 
-	const { data, suppliers, products }: Props = $props();
+	const { data, suppliers, products, existingOrder }: Props = $props();
 
-	const form: SuperForm<PurchaseOrderSchema> = superForm(data, {
-		validators: zodClient(purchaseOrderSchema),
+	const form: SuperForm<PurchaseOrderItemSchema> = superForm(data, {
+		validators: zodClient(purchaseOrderItemSchema),
 		onUpdated: ({ form: f }) => {
 			if (f.valid) {
 				toast.success(`Purchase order added successfully`);
-				selectedSupplier = { label: '', value: 0 };
 				selectedProduct = { label: '', value: 0 };
+				$formData.supplierId = existingOrder.supplierId;
+			} else {
+				toast.error(`Failed to add purchase order`);
 			}
 		}
 	});
 
-	const { form: formData, enhance, submitting, errors } = form;
+	const { form: formData, enhance, submitting } = form;
 
 	let selectedSupplier = $state({
-		label: '',
-		value: 0
+		label: existingOrder.supplierId ? suppliers[existingOrder.supplierId].name : '',
+		value: existingOrder.supplierId ?? 0
 	});
+	// let selectedSupplier = $state({
+	// 	label: '',
+	// 	value: 0
+	// });
 	let selectedProduct = $state({
 		label: '',
 		value: 0
+	});
+	console.log(existingOrder.supplierId);
+
+	$effect(() => {
+		$formData.supplierId = existingOrder.supplierId;
 	});
 </script>
 
@@ -56,7 +73,7 @@
 		</CardDescription>
 	</CardHeader>
 	<CardContent>
-		<form action="?/addPurchaseOrder" method="POST" use:enhance>
+		<form action="?/addPurchaseOrderItem" method="POST" use:enhance>
 			<div class="flex items-start space-x-4">
 				<div class="flex-grow">
 					<Form.Field {form} name="supplierId">

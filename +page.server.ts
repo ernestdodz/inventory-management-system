@@ -3,29 +3,33 @@ import { purchaseOrderItems, purchaseOrders } from '$lib/db/schema/purchase-orde
 import type { Actions, PageServerLoad } from './$types';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import {
-	purchaseOrderItemSchema,
-	purchaseOrderSchema,
-	type PurchaseOrderItemCookie
-} from '$lib/validation';
+import { purchaseOrderItemSchema, purchaseOrderSchema } from '$lib/validation';
 import { suppliers } from '$lib/db/schema/supplier-schema';
 import { products } from '$lib/db/schema/product-schema';
 import { eq } from 'drizzle-orm';
-import type { Cookies } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ cookies }) => {
-	const existingOrder = getPurchaseOrder(cookies);
+export const load: PageServerLoad = async (event) => {
+	// const sessionId = event.cookies.get('sessionId');
 
-	const orderItems = await db.query.purchaseOrderItems.findMany({
-		where: eq(purchaseOrderItems.purchaseOrderId, existingOrder.id),
+	// const wew = await db.query.purchaseOrders.findMany({
+	// 	where: eq(purchaseOrders.sessionId, sessionId ?? ''),
+	// 	with: {
+	// 		purchaseOrderItems: {
+	// 			with: {
+	// 				product: true
+	// 			}
+	// 		}
+	// 	}
+	// });
+
+	const purchaseOrderItems = await db.query.purchaseOrderItems.findMany({
 		with: {
 			product: true
 		}
 	});
 
 	return {
-		existingOrder,
-		purchaseOrderItems: orderItems,
+		purchaseOrderItems,
 		suppliers: await db.select().from(suppliers),
 		products: await db.select().from(products),
 		addForm: await superValidate(zod(purchaseOrderItemSchema))
@@ -41,25 +45,27 @@ export const actions: Actions = {
 		}
 
 		try {
-			const existingOrder = getPurchaseOrder(event.cookies);
+			const existingOrder = await db.query.purchaseOrders.findFirst({
+				where: eq(purchaseOrders.sessionId, event.cookies.get('sessionId') ?? '')
+			});
+
+			const randomSessionId = crypto.randomUUID();
+
+			if (!existingOrder) {
+				event.cookies.set('sessionId', randomSessionId, { path: '/' });
+			}
 
 			const orderId =
 				existingOrder?.id ??
 				(await db
 					.insert(purchaseOrders)
 					.values({
-						sessionId: 'temp-session',
+						sessionId: randomSessionId,
 						supplierId: form.data.supplierId,
 						status: 'draft'
 					})
 					.returning({ id: purchaseOrders.id })
 					.then(([newOrder]) => newOrder.id));
-
-			if (!existingOrder?.id) {
-				event.cookies.set('purchase_order_session', JSON.stringify({ id: orderId, ...form.data }), {
-					path: '/'
-				});
-			}
 
 			await db.insert(purchaseOrderItems).values({
 				purchaseOrderId: orderId,
@@ -68,12 +74,7 @@ export const actions: Actions = {
 			});
 		} catch (error) {
 			console.error('Error adding purchase order item:', error);
-
-			if (error instanceof Error) {
-				return fail(500, { form, message: error.message });
-			} else {
-				return fail(500, { form, message: 'An unexpected error occurred' });
-			}
+			return fail(500, { form });
 		}
 
 		return { form };
@@ -98,12 +99,4 @@ export const actions: Actions = {
 
 		return { form };
 	}
-};
-
-const getPurchaseOrder = (cookies: Cookies) => {
-	const existingOrder = JSON.parse(
-		cookies.get('purchase_order_session') ?? '{}'
-	) as PurchaseOrderItemCookie;
-
-	return existingOrder;
 };

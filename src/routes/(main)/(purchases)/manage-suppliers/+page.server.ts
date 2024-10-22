@@ -22,11 +22,12 @@ export const actions: Actions = {
 			console.error('Add Supplier Form Validation Failed:', form.errors);
 			return fail(400, { form });
 		}
-		const session = await event.locals.getSession();
+		// const session = await event.locals.getSession();
 
-		if (!session?.user) {
-			return fail(401, { form, message: 'Unauthorized' });
-		}
+		// if (!session?.user) {
+		// 	return fail(401, { form, message: 'Unauthorized' });
+		// }
+		// console.log('form.data', form.data);
 
 		try {
 			await db.insert(suppliers).values(form.data);

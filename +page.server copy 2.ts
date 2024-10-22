@@ -6,26 +6,33 @@ import { zod } from 'sveltekit-superforms/adapters';
 import {
 	purchaseOrderItemSchema,
 	purchaseOrderSchema,
-	type PurchaseOrderItemCookie
+	type PurchaseOrderSchema
 } from '$lib/validation';
 import { suppliers } from '$lib/db/schema/supplier-schema';
 import { products } from '$lib/db/schema/product-schema';
-import { eq } from 'drizzle-orm';
-import type { Cookies } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ cookies }) => {
-	const existingOrder = getPurchaseOrder(cookies);
+export const load: PageServerLoad = async () => {
+	// const sessionId = event.cookies.get('sessionId');
 
-	const orderItems = await db.query.purchaseOrderItems.findMany({
-		where: eq(purchaseOrderItems.purchaseOrderId, existingOrder.id),
+	// const wew = await db.query.purchaseOrders.findMany({
+	// 	where: eq(purchaseOrders.sessionId, sessionId ?? ''),
+	// 	with: {
+	// 		purchaseOrderItems: {
+	// 			with: {
+	// 				product: true
+	// 			}
+	// 		}
+	// 	}
+	// });
+
+	const purchaseOrderItems = await db.query.purchaseOrderItems.findMany({
 		with: {
 			product: true
 		}
 	});
 
 	return {
-		existingOrder,
-		purchaseOrderItems: orderItems,
+		purchaseOrderItems,
 		suppliers: await db.select().from(suppliers),
 		products: await db.select().from(products),
 		addForm: await superValidate(zod(purchaseOrderItemSchema))
@@ -41,7 +48,11 @@ export const actions: Actions = {
 		}
 
 		try {
-			const existingOrder = getPurchaseOrder(event.cookies);
+			const existingOrderCookie = event.cookies.get('purchase_order_session');
+
+			const existingOrder = JSON.parse(existingOrderCookie ?? '{}') as PurchaseOrderSchema & {
+				id: number;
+			};
 
 			const orderId =
 				existingOrder?.id ??
@@ -55,7 +66,7 @@ export const actions: Actions = {
 					.returning({ id: purchaseOrders.id })
 					.then(([newOrder]) => newOrder.id));
 
-			if (!existingOrder?.id) {
+			if (!existingOrderCookie) {
 				event.cookies.set('purchase_order_session', JSON.stringify({ id: orderId, ...form.data }), {
 					path: '/'
 				});
@@ -68,12 +79,7 @@ export const actions: Actions = {
 			});
 		} catch (error) {
 			console.error('Error adding purchase order item:', error);
-
-			if (error instanceof Error) {
-				return fail(500, { form, message: error.message });
-			} else {
-				return fail(500, { form, message: 'An unexpected error occurred' });
-			}
+			return fail(500, { form });
 		}
 
 		return { form };
@@ -98,12 +104,4 @@ export const actions: Actions = {
 
 		return { form };
 	}
-};
-
-const getPurchaseOrder = (cookies: Cookies) => {
-	const existingOrder = JSON.parse(
-		cookies.get('purchase_order_session') ?? '{}'
-	) as PurchaseOrderItemCookie;
-
-	return existingOrder;
 };

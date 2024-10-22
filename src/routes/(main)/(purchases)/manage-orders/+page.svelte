@@ -1,29 +1,26 @@
 <script lang="ts">
+	import AddPurchaseOrderForm from '$lib/components/orders/AddPurchaseOrderForm.svelte';
+
 	import * as Table from '$lib/components/ui/table';
 	import { Button } from '$lib/components/ui/button';
-	import AddPurchaseOrderForm from '$lib/components/orders/AddPurchaseOrderForm.svelte';
 	import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '$lib/components/ui/card';
-	import { Trash2 } from 'lucide-svelte'; // Import the Trash2 icon
+	import { Trash2 } from 'lucide-svelte';
 
 	const { data } = $props();
 
-	let purchaseOrderItems = [
-		{ name: 'Powdered Milk', sku: '11762969', qty: 2, price: 30, amount: 60.0 },
-		{ name: 'Chips (big)', sku: '11762968', qty: 3, price: 15, amount: 45.0 },
-		{ name: 'Soda', sku: '11762970', qty: 4, price: 10, amount: 40.0 }
-	];
-
-	function calculateTotal() {
-		return purchaseOrderItems.reduce((total, item) => total + item.amount, 0).toFixed(2);
-	}
+	console.log(data.existingOrder);
 </script>
 
 <div class="container mx-auto mt-4 space-y-6">
 	<h1 class="mb-4 text-2xl font-bold">New Purchase Order</h1>
 
-	<AddPurchaseOrderForm data={data.addForm} suppliers={data.suppliers} products={data.products} />
+	<AddPurchaseOrderForm
+		data={data.addForm}
+		suppliers={data.suppliers}
+		products={data.products}
+		existingOrder={data.existingOrder}
+	/>
 
-	<!-- Purchase Order Items Card -->
 	<Card>
 		<CardHeader>
 			<CardTitle>Purchase Order Items</CardTitle>
@@ -41,7 +38,7 @@
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
-					{#each data.purchaseOrders as item}
+					{#each data.purchaseOrderItems as item}
 						<Table.Row>
 							<Table.Cell>
 								<div>{item.product?.name ?? ''}</div>
@@ -53,10 +50,6 @@
 							</Table.Cell>
 							<Table.Cell class="text-right"
 								>${(item.product!.price * item.quantity).toFixed(2)}
-							</Table.Cell>
-							<Table.Cell class="text-right">
-								<div>{item.supplier?.name ?? ''}</div>
-								<div class="text-sm text-gray-500">{item.supplier?.address ?? ''}</div>
 							</Table.Cell>
 							<Table.Cell>
 								<Button variant="destructive" size="icon" class="h-8 w-8" on:click={() => {}}>
@@ -71,9 +64,9 @@
 		<CardFooter class="flex flex-col">
 			<hr class="my-4 w-full border-t border-gray-200" />
 			<div class="flex w-full items-center justify-between">
-				<div class="text-xl font-bold">Total: ${calculateTotal()}</div>
+				<div class="text-xl font-bold">Total: $140</div>
 				<div class="space-x-2">
-					<Button class="w-32">Create PO</Button>
+					<Button class="w-32" type="submit">Create PO</Button>
 				</div>
 			</div>
 		</CardFooter>

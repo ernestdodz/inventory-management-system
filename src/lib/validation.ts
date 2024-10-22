@@ -40,8 +40,20 @@ export type CustomerSchema = z.infer<typeof customerSchema>;
 
 export const purchaseOrderSchema = z.object({
 	supplierId: z.number().int().positive(),
+	orderDate: z.date(),
+	status: z.enum(['pending', 'approved', 'rejected']),
+	sessionId: z.string().min(1)
+});
+
+export type PurchaseOrderSchema = z.infer<typeof purchaseOrderSchema>;
+
+export const purchaseOrderItemSchema = z.object({
+	supplierId: z.number().int().positive(),
 	productId: z.number().int().positive(),
 	quantity: z.number().int().positive().default(1)
 });
 
-export type PurchaseOrderSchema = z.infer<typeof purchaseOrderSchema>;
+export type PurchaseOrderItemSchema = z.infer<typeof purchaseOrderItemSchema>;
+export type PurchaseOrderItemCookie = PurchaseOrderItemSchema & {
+	id: number;
+};
