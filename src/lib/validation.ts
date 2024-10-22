@@ -54,6 +54,9 @@ export const purchaseOrderItemSchema = z.object({
 });
 
 export type PurchaseOrderItemSchema = z.infer<typeof purchaseOrderItemSchema>;
-export type PurchaseOrderItemCookie = PurchaseOrderItemSchema & {
+interface IPurchaseOrderItemCookie {
 	id: number;
-};
+	supplierId: number;
+}
+
+export type PurchaseOrderItemCookie = IPurchaseOrderItemCookie | undefined;

@@ -55,9 +55,13 @@ export const actions: Actions = {
 					.then(([newOrder]) => newOrder.id));
 
 			if (!existingOrder?.id) {
-				event.cookies.set('purchase_order_session', JSON.stringify({ id: orderId, ...form.data }), {
-					path: '/'
-				});
+				event.cookies.set(
+					'purchase_order_session',
+					JSON.stringify({ id: orderId, supplierId: form.data.supplierId }),
+					{
+						path: '/'
+					}
+				);
 			}
 
 			await db.insert(purchaseOrderItems).values({
