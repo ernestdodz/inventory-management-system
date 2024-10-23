@@ -46,10 +46,6 @@
 
 	const { form: formData, enhance, submitting } = form;
 
-	// let selectedSupplier = $state({
-	// 	label: existingOrder ? suppliers[existingOrder.supplierId].name : '',
-	// 	value: existingOrder?.supplierId ?? 0
-	// });
 	let selectedSupplier = $state({
 		label: existingOrder ? suppliers.find((s) => s.id === existingOrder.supplierId)?.name : '',
 		value: existingOrder?.supplierId ?? 0

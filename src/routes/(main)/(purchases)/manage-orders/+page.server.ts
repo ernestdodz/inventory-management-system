@@ -88,7 +88,7 @@ export const actions: Actions = {
 			return fail(400, { form });
 		}
 		try {
-			await db.insert(purchaseOrders).values({
+			await db.update(purchaseOrders).set({
 				poCode: 'PO-XY12',
 				orderDate: new Date(),
 				supplierId: form.data.supplierId,

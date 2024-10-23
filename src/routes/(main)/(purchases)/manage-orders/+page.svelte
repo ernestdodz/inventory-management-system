@@ -66,7 +66,9 @@
 			<div class="flex w-full items-center justify-between">
 				<div class="text-xl font-bold">Total: $140</div>
 				<div class="space-x-2">
-					<Button class="w-32" type="submit">Create PO</Button>
+					<form action="?/createPurchaseOrder" method="POST">
+						<Button class="w-32" type="submit">Create PO</Button>
+					</form>
 				</div>
 			</div>
 		</CardFooter>

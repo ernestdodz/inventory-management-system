@@ -39,10 +39,9 @@ export const customerSchema = z.object({
 export type CustomerSchema = z.infer<typeof customerSchema>;
 
 export const purchaseOrderSchema = z.object({
+	poCode: z.string().min(1),
 	supplierId: z.number().int().positive(),
-	orderDate: z.date(),
-	status: z.enum(['pending', 'approved', 'rejected']),
-	sessionId: z.string().min(1)
+	status: z.enum(['pending', 'approved', 'rejected'])
 });
 
 export type PurchaseOrderSchema = z.infer<typeof purchaseOrderSchema>;
