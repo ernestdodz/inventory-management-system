@@ -59,3 +59,17 @@ interface IPurchaseOrderItemCookie {
 }
 
 export type PurchaseOrderItemCookie = IPurchaseOrderItemCookie | undefined;
+
+export const purchaseOrderCartSchema = z.object({
+	supplierId: z.number(),
+	createdAt: z.date(),
+	updatedAt: z.date()
+});
+
+export const purchaseOrderCartItemSchema = z.object({
+	supplierId: z.number(),
+	productId: z.number(),
+	quantity: z.number()
+});
+
+export type PurchaseOrderCartItemSchema = z.infer<typeof purchaseOrderCartItemSchema>;

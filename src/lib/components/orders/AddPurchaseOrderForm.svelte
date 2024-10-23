@@ -13,8 +13,8 @@
 	import { type SuperValidated, superForm } from 'sveltekit-superforms';
 	import {
 		purchaseOrderItemSchema,
-		type PurchaseOrderItemSchema,
-		type PurchaseOrderItemCookie
+		type PurchaseOrderItemCookie,
+		type PurchaseOrderCartItemSchema
 	} from '$lib/validation';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import type { SuperForm } from 'sveltekit-superforms';
@@ -23,7 +23,7 @@
 	import { toast } from 'svelte-sonner';
 
 	interface Props {
-		data: SuperValidated<PurchaseOrderItemSchema>;
+		data: SuperValidated<PurchaseOrderCartItemSchema>;
 		suppliers: Supplier[];
 		products: Product[];
 		existingOrder: PurchaseOrderItemCookie;
@@ -31,7 +31,7 @@
 
 	const { data, suppliers, products, existingOrder }: Props = $props();
 
-	const form: SuperForm<PurchaseOrderItemSchema> = superForm(data, {
+	const form: SuperForm<PurchaseOrderCartItemSchema> = superForm(data, {
 		validators: zodClient(purchaseOrderItemSchema),
 		onUpdated: ({ form: f }) => {
 			if (f.valid) {
@@ -54,8 +54,6 @@
 		label: '',
 		value: 0
 	});
-	console.log(existingOrder);
-	// console.log(suppliers.find((s) => s.id === existingOrder?.supplierId));
 
 	$effect(() => {
 		$formData.supplierId = existingOrder?.supplierId ?? 0;
@@ -70,7 +68,7 @@
 		</CardDescription>
 	</CardHeader>
 	<CardContent>
-		<form action="?/addPurchaseOrderItem" method="POST" use:enhance>
+		<form action="?/addPurchaseCartItem" method="POST" use:enhance>
 			<div class="flex items-start space-x-4">
 				<div class="flex-grow">
 					<Form.Field {form} name="supplierId">

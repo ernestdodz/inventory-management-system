@@ -7,26 +7,26 @@
 	import {
 		Card,
 		CardContent,
-		CardFooter,
 		CardHeader,
 		CardTitle,
 		CardDescription
 	} from '$lib/components/ui/card';
 
-	// Fake data for purchase orders and products
-	let purchaseOrders = ['PO-001', 'PO-002', 'PO-003', 'PO-004', 'PO-005'];
-
 	let selectedPO = $state({
 		label: '',
-		value: ''
+		value: 0
 	});
 
-	let receivingItems = [
-		{ name: 'Powdered Milk', sku: '11762969', orderedQty: 10, receivedQty: 0, remainingQty: 10 },
-		{ name: 'Chips (big)', sku: '11762968', orderedQty: 15, receivedQty: 5, remainingQty: 10 },
-		{ name: 'Soda', sku: '11762970', orderedQty: 20, receivedQty: 0, remainingQty: 20 }
-	];
+	const { data } = $props();
+
+	let selectedPurchaseOrder = $derived(
+		data.purchaseOrders.find((po) => po.id === selectedPO.value)
+	);
+
+	let receivingItems = $derived(selectedPurchaseOrder?.items ?? []);
 </script>
+
+<!-- {console.log(data.purchaseOrders[0].supplier.name)} -->
 
 <div class="container mx-auto mt-4 space-y-6">
 	<h1 class="mb-4 text-2xl font-bold">Manage Receiving</h1>
@@ -55,8 +55,8 @@
 							<Select.Value placeholder="Select purchase order" />
 						</Select.Trigger>
 						<Select.Content>
-							{#each purchaseOrders as po}
-								<Select.Item value={po} label={po} />
+							{#each data.purchaseOrders as po}
+								<Select.Item value={po.id} label={po.poCode} />
 							{/each}
 						</Select.Content>
 					</Select.Root>
@@ -66,50 +66,43 @@
 		</CardContent>
 	</Card>
 
-	<!-- Receiving Items Card -->
 	<Card>
 		<CardHeader>
-			<CardTitle>Receiving Items</CardTitle>
+			<div class="flex items-center justify-between">
+				<CardTitle>Receiving Items</CardTitle>
+				{#if selectedPurchaseOrder}
+					<div class="text-sm text-gray-500">SUPPLIER: {selectedPurchaseOrder.supplier.name}</div>
+				{/if}
+			</div>
 		</CardHeader>
 		<CardContent>
 			<Table.Root>
 				<Table.Header>
 					<Table.Row>
 						<Table.Head>Product</Table.Head>
-						<Table.Head class="text-right">Ordered Qty</Table.Head>
-						<Table.Head class="text-right">Received Qty</Table.Head>
-						<Table.Head class="text-right">Remaining Qty</Table.Head>
-						<Table.Head>Action</Table.Head>
+						<Table.Head>Qty</Table.Head>
+						<Table.Head>Price</Table.Head>
+						<Table.Head>Amount</Table.Head>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
-					{#each receivingItems as item, index}
+					{#each receivingItems as item}
 						<Table.Row>
 							<Table.Cell>
-								<div>{item.name}</div>
-								<div class="text-sm text-gray-500">{item.sku}</div>
+								<div>{item.product.name}</div>
+								<div class="text-sm text-gray-500">{item.product.sku}</div>
 							</Table.Cell>
-							<Table.Cell class="text-right">{item.orderedQty}</Table.Cell>
-							<Table.Cell class="text-right">
-								<Input
-									type="number"
-									value={item.receivedQty}
-									min="0"
-									max={item.orderedQty}
-									class="w-20 text-right"
-								/>
-							</Table.Cell>
-							<Table.Cell class="text-right">{item.remainingQty}</Table.Cell>
-							<Table.Cell>
-								<Button variant="outline" size="sm" on:click={() => {}}>Receive</Button>
-							</Table.Cell>
+							<Table.Cell>{item.quantity}</Table.Cell>
+							<Table.Cell>{item.product.price}</Table.Cell>
+							<Table.Cell>{item.product.price * item.quantity}</Table.Cell>
 						</Table.Row>
 					{/each}
 				</Table.Body>
 			</Table.Root>
 		</CardContent>
-		<CardFooter class="flex justify-end">
-			<Button class="w-32">Complete Receiving</Button>
-		</CardFooter>
 	</Card>
+
+	<div class="mt-4 flex justify-end px-4">
+		<Button>Complete Receiving</Button>
+	</div>
 </div>

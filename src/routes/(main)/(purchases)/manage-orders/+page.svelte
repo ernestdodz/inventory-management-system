@@ -6,9 +6,9 @@
 	import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '$lib/components/ui/card';
 	import { Trash2 } from 'lucide-svelte';
 
-	const { data } = $props();
+	import CreatePurchaseOrderForm from '$lib/components/orders/CreatePurchaseOrderForm.svelte';
 
-	console.log(data.existingOrder);
+	const { data } = $props();
 </script>
 
 <div class="container mx-auto mt-4 space-y-6">
@@ -30,29 +30,24 @@
 				<Table.Header>
 					<Table.Row>
 						<Table.Head>Product</Table.Head>
-						<Table.Head class="text-right">Qty</Table.Head>
-						<Table.Head class="text-right">Price</Table.Head>
-						<Table.Head class="text-right">Amount</Table.Head>
-						<Table.Head class="text-right">Supplier</Table.Head>
-						<Table.Head></Table.Head>
+						<Table.Head>Qty</Table.Head>
+						<Table.Head>Price</Table.Head>
+						<Table.Head>Amount</Table.Head>
+						<Table.Head>Action</Table.Head>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
 					{#each data.purchaseOrderItems as item}
 						<Table.Row>
 							<Table.Cell>
-								<div>{item.product?.name ?? ''}</div>
-								<div class="text-sm text-gray-500">{item.product?.sku ?? ''}</div>
+								<div class="truncate text-sm">{item.product?.name ?? ''}</div>
+								<div class="truncate text-xs text-gray-500">{item.product?.sku ?? ''}</div>
 							</Table.Cell>
-							<Table.Cell class="text-right">{item.quantity}</Table.Cell>
-							<Table.Cell class="text-right"
-								>${item.product?.price.toFixed(2) ?? '0.00'}
-							</Table.Cell>
-							<Table.Cell class="text-right"
-								>${(item.product!.price * item.quantity).toFixed(2)}
-							</Table.Cell>
+							<Table.Cell>{item.quantity}</Table.Cell>
+							<Table.Cell>${item.product?.price.toFixed(2) ?? '0.00'}</Table.Cell>
+							<Table.Cell>${(item.product!.price * item.quantity).toFixed(2)}</Table.Cell>
 							<Table.Cell>
-								<Button variant="destructive" size="icon" class="h-8 w-8" on:click={() => {}}>
+								<Button variant="destructive" size="icon" class="h-8 w-8" onclick={() => {}}>
 									<Trash2 class="h-4 w-4" />
 								</Button>
 							</Table.Cell>
@@ -64,11 +59,13 @@
 		<CardFooter class="flex flex-col">
 			<hr class="my-4 w-full border-t border-gray-200" />
 			<div class="flex w-full items-center justify-between">
-				<div class="text-xl font-bold">Total: $140</div>
+				<div class="text-xl font-bold">
+					Total: ${data.purchaseOrderItems
+						.reduce((acc, item) => acc + item.product!.price * item.quantity, 0)
+						.toFixed(2)}
+				</div>
 				<div class="space-x-2">
-					<form action="?/createPurchaseOrder" method="POST">
-						<Button class="w-32" type="submit">Create PO</Button>
-					</form>
+					<CreatePurchaseOrderForm />
 				</div>
 			</div>
 		</CardFooter>

@@ -1,37 +1,77 @@
-import { serial, pgTable, integer, timestamp, pgEnum, boolean, varchar } from 'drizzle-orm/pg-core';
+import { serial, pgTable, integer, timestamp, pgEnum, varchar } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { suppliers } from './supplier-schema';
 import { products } from './product-schema';
 
 export const purchaseOrderStatusEnum = pgEnum('purchase_order_status', [
-	'draft',
 	'pending',
 	'approved',
 	'rejected',
 	'completed'
 ]);
 
-export const purchaseOrders = pgTable('purchase_order', {
+export const purchaseOrderCarts = pgTable('purchase_order_cart', {
 	id: serial('id').primaryKey(),
 	supplierId: integer('supplier_id')
 		.notNull()
 		.references(() => suppliers.id),
-	orderDate: timestamp('order_date'),
-	poCode: varchar('po_code', { length: 20 }),
-	status: purchaseOrderStatusEnum('status').notNull().default('draft')
+	createdAt: timestamp('created_at').defaultNow().notNull(),
+	updatedAt: timestamp('updated_at').defaultNow().notNull()
 });
 
-export const purchaseOrderItems = pgTable('purchase_order_item', {
+export const purchaseOrderCartItems = pgTable('purchase_order_cart_item', {
 	id: serial('id').primaryKey(),
-	purchaseOrderId: integer('purchase_order_id').references(() => purchaseOrders.id, {
+	cartId: integer('cart_id').references(() => purchaseOrderCarts.id, {
 		onDelete: 'cascade'
 	}),
 	productId: integer('product_id')
 		.notNull()
 		.references(() => products.id),
-	quantity: integer('quantity').notNull(),
-	isCart: boolean('is_cart').notNull().default(true) //will be needed to check will use is cart and get the purchase order id, actually might not be needed can be used the status draft
+	quantity: integer('quantity').notNull()
 });
+
+export const purchaseOrders = pgTable('purchase_order', {
+	id: serial('id').primaryKey(),
+	supplierId: integer('supplier_id')
+		.notNull()
+		.references(() => suppliers.id),
+	orderDate: timestamp('order_date').notNull().defaultNow(),
+	poCode: varchar('po_code', { length: 20 }).notNull(),
+	status: purchaseOrderStatusEnum('status').notNull().default('pending')
+});
+
+export const purchaseOrderItems = pgTable('purchase_order_item', {
+	id: serial('id').primaryKey(),
+	purchaseOrderId: integer('purchase_order_id')
+		.notNull()
+		.references(() => purchaseOrders.id, {
+			onDelete: 'cascade'
+		}),
+	productId: integer('product_id')
+		.notNull()
+		.references(() => products.id),
+	quantity: integer('quantity').notNull()
+});
+
+// Relations
+export const purchaseOrderCartRelations = relations(purchaseOrderCarts, ({ one, many }) => ({
+	supplier: one(suppliers, {
+		fields: [purchaseOrderCarts.supplierId],
+		references: [suppliers.id]
+	}),
+	items: many(purchaseOrderCartItems)
+}));
+
+export const purchaseOrderCartItemRelations = relations(purchaseOrderCartItems, ({ one }) => ({
+	cart: one(purchaseOrderCarts, {
+		fields: [purchaseOrderCartItems.cartId],
+		references: [purchaseOrderCarts.id]
+	}),
+	product: one(products, {
+		fields: [purchaseOrderCartItems.productId],
+		references: [products.id]
+	})
+}));
 
 export const purchaseOrderRelations = relations(purchaseOrders, ({ one, many }) => ({
 	supplier: one(suppliers, {
@@ -52,5 +92,8 @@ export const purchaseOrderItemRelations = relations(purchaseOrderItems, ({ one }
 	})
 }));
 
+// Types
+export type PurchaseOrderCart = typeof purchaseOrderCarts.$inferSelect;
+export type PurchaseOrderCartItem = typeof purchaseOrderCartItems.$inferSelect;
 export type PurchaseOrder = typeof purchaseOrders.$inferSelect;
 export type PurchaseOrderItem = typeof purchaseOrderItems.$inferSelect;

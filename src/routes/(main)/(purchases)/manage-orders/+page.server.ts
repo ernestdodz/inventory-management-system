@@ -1,11 +1,16 @@
 import { db } from '$lib/db';
-import { purchaseOrderItems, purchaseOrders } from '$lib/db/schema/purchase-order-schema';
+import {
+	purchaseOrderCartItems,
+	purchaseOrderCarts,
+	purchaseOrderItems,
+	purchaseOrders
+} from '$lib/db/schema/purchase-order-schema';
 import type { Actions, PageServerLoad } from './$types';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import {
+	purchaseOrderCartItemSchema,
 	purchaseOrderItemSchema,
-	purchaseOrderSchema,
 	type PurchaseOrderItemCookie
 } from '$lib/validation';
 import { suppliers } from '$lib/db/schema/supplier-schema';
@@ -16,8 +21,8 @@ import type { Cookies } from '@sveltejs/kit';
 export const load: PageServerLoad = async ({ cookies }) => {
 	const existingOrder = getPurchaseOrder(cookies);
 
-	const orderItems = await db.query.purchaseOrderItems.findMany({
-		where: eq(purchaseOrderItems.purchaseOrderId, existingOrder?.id ?? 0),
+	const cartItems = await db.query.purchaseOrderCartItems.findMany({
+		where: eq(purchaseOrderCartItems.cartId, existingOrder?.id ?? 0),
 		with: {
 			product: true
 		}
@@ -25,7 +30,7 @@ export const load: PageServerLoad = async ({ cookies }) => {
 
 	return {
 		existingOrder,
-		purchaseOrderItems: orderItems,
+		purchaseOrderItems: cartItems,
 		suppliers: await db.select().from(suppliers),
 		products: await db.select().from(products),
 		addForm: await superValidate(zod(purchaseOrderItemSchema))
@@ -33,8 +38,8 @@ export const load: PageServerLoad = async ({ cookies }) => {
 };
 
 export const actions: Actions = {
-	addPurchaseOrderItem: async (event) => {
-		const form = await superValidate(event, zod(purchaseOrderItemSchema));
+	addPurchaseCartItem: async (event) => {
+		const form = await superValidate(event, zod(purchaseOrderCartItemSchema));
 		if (!form.valid) {
 			console.error('Add Purchase Order Form Validation Failed:', form.errors);
 			return fail(400, { form });
@@ -43,29 +48,28 @@ export const actions: Actions = {
 		try {
 			const existingOrder = getPurchaseOrder(event.cookies);
 
-			const orderId =
+			const orderCartId =
 				existingOrder?.id ??
 				(await db
-					.insert(purchaseOrders)
+					.insert(purchaseOrderCarts)
 					.values({
-						supplierId: form.data.supplierId,
-						status: 'draft'
+						supplierId: form.data.supplierId
 					})
 					.returning({ id: purchaseOrders.id })
 					.then(([newOrder]) => newOrder.id));
 
 			if (!existingOrder?.id) {
 				event.cookies.set(
-					'purchase_order_session',
-					JSON.stringify({ id: orderId, supplierId: form.data.supplierId }),
+					'purchase_cart_session',
+					JSON.stringify({ id: orderCartId, supplierId: form.data.supplierId }),
 					{
 						path: '/'
 					}
 				);
 			}
 
-			await db.insert(purchaseOrderItems).values({
-				purchaseOrderId: orderId,
+			await db.insert(purchaseOrderCartItems).values({
+				cartId: orderCartId,
 				productId: form.data.productId,
 				quantity: form.data.quantity
 			});
@@ -82,29 +86,53 @@ export const actions: Actions = {
 		return { form };
 	},
 	createPurchaseOrder: async (event) => {
-		const form = await superValidate(event, zod(purchaseOrderSchema));
-		if (!form.valid) {
-			console.error('Create Purchase Order Form Validation Failed:', form.errors);
-			return fail(400, { form });
-		}
+		console.log('wew');
 		try {
-			await db.update(purchaseOrders).set({
-				poCode: 'PO-XY12',
-				orderDate: new Date(),
-				supplierId: form.data.supplierId,
-				status: 'pending'
+			const currentCart = getPurchaseOrder(event.cookies);
+
+			const cart = await db.query.purchaseOrderCarts.findFirst({
+				where: eq(purchaseOrderCarts.id, currentCart?.id ?? 0),
+				with: {
+					items: true
+				}
 			});
+
+			if (!cart) {
+				return fail(400, { message: 'Cart not found' });
+			}
+
+			const purchaseOrderId = await db
+				.insert(purchaseOrders)
+				.values({
+					poCode: 'PO-XY12',
+					supplierId: cart.supplierId
+				})
+				.returning({ id: purchaseOrders.id })
+				.then(([newOrder]) => newOrder.id);
+
+			const cartItems =
+				cart.items.map((items) => ({
+					productId: items.productId,
+					purchaseOrderId: purchaseOrderId,
+					quantity: items.quantity
+				})) ?? [];
+
+			await db.insert(purchaseOrderItems).values(cartItems);
+
+			await db.delete(purchaseOrderCarts).where(eq(purchaseOrderCarts.id, currentCart?.id ?? 0));
+
+			event.cookies.delete('purchase_cart_session', { path: '/' });
 		} catch (error) {
 			console.error('Error creating purchase order:', error);
-			return fail(500, { form });
+			return fail(500, { message: 'An unexpected error occurred' });
 		}
 
-		return { form };
+		return { message: 'Purchase order created successfully' };
 	}
 };
 
 const getPurchaseOrder = (cookies: Cookies) => {
-	const orderCookie = cookies.get('purchase_order_session');
+	const orderCookie = cookies.get('purchase_cart_session');
 	const existingOrder: PurchaseOrderItemCookie | undefined = orderCookie
 		? JSON.parse(orderCookie)
 		: undefined;
