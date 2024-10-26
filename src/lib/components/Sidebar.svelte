@@ -123,4 +123,8 @@
 	.active {
 		@apply font-semibold text-blue-600;
 	}
+
+	.h-1 {
+		transition: width 0.3s ease-out;
+	}
 </style>

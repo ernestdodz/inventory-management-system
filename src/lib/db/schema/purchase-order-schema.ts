@@ -53,7 +53,6 @@ export const purchaseOrderItems = pgTable('purchase_order_item', {
 	quantity: integer('quantity').notNull()
 });
 
-// Relations
 export const purchaseOrderCartRelations = relations(purchaseOrderCarts, ({ one, many }) => ({
 	supplier: one(suppliers, {
 		fields: [purchaseOrderCarts.supplierId],

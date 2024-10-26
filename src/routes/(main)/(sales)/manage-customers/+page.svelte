@@ -6,13 +6,6 @@
 	import { Search } from 'lucide-svelte';
 	import AddCustomerForm from '$lib/components/customers/AddCustomerForm.svelte';
 
-	const customers = [
-		{ id: 1, name: 'John Doe', position: 'Manager' },
-		{ id: 2, name: 'Jane Smith', position: 'Developer' },
-		{ id: 3, name: 'Bob Johnson', position: 'Designer' },
-		{ id: 4, name: 'Alice Brown', position: 'Sales Representative' }
-	];
-
 	const { data } = $props();
 </script>
 
@@ -25,7 +18,6 @@
 	</div>
 
 	<div class="grid gap-8 lg:grid-cols-3">
-		<!-- Left column: Customer creation form -->
 		<Card class="lg:col-span-1">
 			<CardHeader>
 				<CardTitle>Add New Customer</CardTitle>
@@ -35,13 +27,12 @@
 			</CardContent>
 		</Card>
 
-		<!-- Right column: Customers list -->
 		<Card class="lg:col-span-2">
 			<CardHeader>
 				<div class="flex justify-between">
 					<CardTitle class="mb-2">Customer List</CardTitle>
 					<span class="mt-2 text-sm text-muted-foreground">
-						Total: {customers.length}
+						Total: {data.customers.length}
 					</span>
 				</div>
 				<div class="space-x flex w-[400px] items-center gap-2">
@@ -65,7 +56,7 @@
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{#each customers as customer}
+						{#each data.customers as customer}
 							<Table.Row>
 								<Table.Cell class="font-medium">{customer.name}</Table.Cell>
 								<Table.Cell>{customer.position}</Table.Cell>

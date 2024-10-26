@@ -33,7 +33,7 @@
 	<Form.Field {form} name="position">
 		<Form.Control let:attrs>
 			<Form.Label>Position</Form.Label>
-			<Select.Root {...attrs}>
+			<Select.Root {...attrs} selected={{ label: $formData.position, value: $formData.position }}>
 				<Select.Trigger>
 					<Select.Value placeholder="Select a position" />
 				</Select.Trigger>
