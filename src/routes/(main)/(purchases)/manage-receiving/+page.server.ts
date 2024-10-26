@@ -1,15 +1,16 @@
 import { db } from '$lib/db';
-import { inventoryItemSchema } from '$lib/validation';
-import { zod } from 'sveltekit-superforms/adapters';
-import { fail } from '@sveltejs/kit';
-import { superValidate } from 'sveltekit-superforms';
+// import { purchaseOrders } from '$lib/db/schema';
 import { inventoryItems } from '$lib/db/schema/inventory-schema';
+
 import { purchaseOrders } from '$lib/db/schema/purchase-order-schema';
+
 import { eq } from 'drizzle-orm/sql';
 
-export const load = async ({ url }) => {
+export const load = async () => {
+	//
+
 	const pendingPurchaseOrders = await db.query.purchaseOrders.findMany({
-		where: eq(purchaseOrders.poCode, url.searchParams.get('poCode') ?? ''),
+		where: eq(purchaseOrders.status, 'pending'),
 		with: {
 			items: {
 				with: {
@@ -23,19 +24,36 @@ export const load = async ({ url }) => {
 };
 
 export const actions = {
-	recievePurchaseOrder: async (event) => {
-		const form = await superValidate(event, zod(inventoryItemSchema));
-		if (!form.valid) {
-			console.error('Purchase Order Form Validation Failed:', form.errors);
-			return fail(400, { form });
-		}
+	addInventory: async ({ url }) => {
+		const purchaseOrder = await db.query.purchaseOrders.findFirst({
+			where: eq(purchaseOrders.poCode, url.searchParams.get('poCode') ?? ''),
+			with: {
+				items: {
+					with: {
+						product: true
+					}
+				}
+			}
+		});
 
-		try {
-			await db.insert(inventoryItems).values(form.data);
-		} catch (error) {
-			console.error('Error inserting purchase order:', error);
-			return fail(500, { form });
-		}
-		return { form };
+		const mappedItems =
+			purchaseOrder?.items.map((item) => ({
+				productId: item.productId,
+				stockIn: item.quantity,
+				stockOut: 0
+			})) ?? [];
+
+		await db.insert(inventoryItems).values(mappedItems);
+
+		await db.delete(purchaseOrders).where(eq(purchaseOrders.id, purchaseOrder?.id ?? 0));
 	}
 };
+
+// const getReceiveOrderCookie = (cookies: Cookies) => {
+// 	const orderCookie = cookies.get('receive_order_session');
+// 	const existingOrder: ReceiveOrderItemCookie | undefined = orderCookie
+// 		? JSON.parse(orderCookie)
+// 		: undefined;
+
+// 	return existingOrder;
+// };

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import * as Table from '$lib/components/ui/table';
 	import { Label } from '$lib/components/ui/label';
-	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
 	import * as Select from '$lib/components/ui/select';
 	import {
@@ -11,22 +10,40 @@
 		CardTitle,
 		CardDescription
 	} from '$lib/components/ui/card';
+	import AddInventoryForm from '$lib/components/inventory/AddInventoryForm.svelte';
+	import type { PurchaseOrder, PurchaseOrderItem } from '$lib/db/schema/purchase-order-schema';
+
+	const { data } = $props();
 
 	let selectedPO = $state({
 		label: '',
 		value: 0
 	});
 
-	const { data } = $props();
+	let selectedPurchaseOrder = $state<PurchaseOrder | null>(null);
+	let receivingItems = $state<PurchaseOrderItem[]>([]);
 
-	let selectedPurchaseOrder = $derived(
-		data.purchaseOrders.find((po) => po.id === selectedPO.value)
-	);
+	function loadPurchaseOrder(poId: number) {
+		const po = data.purchaseOrders.find((po) => po.id === poId);
+		if (po) {
+			selectedPurchaseOrder = po;
+			receivingItems = po.items ?? [];
+			selectedPO = {
+				label: po.poCode,
+				value: po.id
+			};
+		} else {
+			selectedPurchaseOrder = null;
+			receivingItems = [];
+		}
+	}
 
-	let receivingItems = $derived(selectedPurchaseOrder?.items ?? []);
+	$effect(() => {
+		if (data.purchaseOrders.length > 0) {
+			loadPurchaseOrder(data.purchaseOrders[0].id);
+		}
+	});
 </script>
-
-<!-- {console.log(data.purchaseOrders[0].supplier.name)} -->
 
 <div class="container mx-auto mt-4 space-y-6">
 	<h1 class="mb-4 text-2xl font-bold">Manage Receiving</h1>
@@ -43,11 +60,8 @@
 					<Select.Root
 						selected={selectedPO}
 						onSelectedChange={(v) => {
-							if (v) {
-								selectedPO = {
-									label: v.label ?? '',
-									value: v.value
-								};
+							if (v && v.label) {
+								selectedPO = { label: v.label, value: v.value };
 							}
 						}}
 					>
@@ -61,7 +75,7 @@
 						</Select.Content>
 					</Select.Root>
 				</div>
-				<Button on:click={() => []} class="w-32">Load PO</Button>
+				<Button on:click={() => loadPurchaseOrder(selectedPO.value)}>Load PO</Button>
 			</div>
 		</CardContent>
 	</Card>
@@ -72,6 +86,8 @@
 				<CardTitle>Receiving Items</CardTitle>
 				{#if selectedPurchaseOrder}
 					<div class="text-sm text-gray-500">SUPPLIER: {selectedPurchaseOrder.supplier.name}</div>
+				{:else}
+					<div class="text-sm text-gray-500">No purchase order selected</div>
 				{/if}
 			</div>
 		</CardHeader>
@@ -86,23 +102,31 @@
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
-					{#each receivingItems as item}
+					{#if receivingItems.length > 0}
+						{#each receivingItems as item}
+							<Table.Row>
+								<Table.Cell>
+									<div>{item.product.name}</div>
+									<div class="text-sm text-gray-500">{item.product.sku}</div>
+								</Table.Cell>
+								<Table.Cell>{item.quantity}</Table.Cell>
+								<Table.Cell>{item.product.price}</Table.Cell>
+								<Table.Cell>{item.product.price * item.quantity}</Table.Cell>
+							</Table.Row>
+						{/each}
+					{:else}
 						<Table.Row>
-							<Table.Cell>
-								<div>{item.product.name}</div>
-								<div class="text-sm text-gray-500">{item.product.sku}</div>
+							<Table.Cell colspan={4} class="text-center text-gray-500">
+								No items to display. Please select and load a purchase order.
 							</Table.Cell>
-							<Table.Cell>{item.quantity}</Table.Cell>
-							<Table.Cell>{item.product.price}</Table.Cell>
-							<Table.Cell>{item.product.price * item.quantity}</Table.Cell>
 						</Table.Row>
-					{/each}
+					{/if}
 				</Table.Body>
 			</Table.Root>
 		</CardContent>
 	</Card>
 
 	<div class="mt-4 flex justify-end px-4">
-		<Button>Complete Receiving</Button>
+		<AddInventoryForm loadedPoCode={selectedPurchaseOrder?.poCode ?? ''} />
 	</div>
 </div>

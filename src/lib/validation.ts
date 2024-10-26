@@ -52,12 +52,6 @@ export const purchaseOrderItemSchema = z.object({
 });
 
 export type PurchaseOrderItemSchema = z.infer<typeof purchaseOrderItemSchema>;
-interface IPurchaseOrderItemCookie {
-	id: number;
-	supplierId: number;
-}
-
-export type PurchaseOrderItemCookie = IPurchaseOrderItemCookie | undefined;
 
 export const purchaseOrderCartSchema = z.object({
 	supplierId: z.number(),
@@ -81,11 +75,3 @@ export const salesOrderCartItemSchema = z.object({
 });
 
 export type SalesOrderCartItemSchema = z.infer<typeof salesOrderCartItemSchema>;
-
-export const inventoryItemSchema = z.object({
-	productId: z.number().int().positive(),
-	stockIn: z.number().int().positive(),
-	stockOut: z.number().int().positive()
-});
-
-export type InventoryItemSchema = z.infer<typeof inventoryItemSchema>;

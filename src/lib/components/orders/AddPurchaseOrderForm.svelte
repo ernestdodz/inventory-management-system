@@ -11,16 +11,13 @@
 	import { Loader2 } from 'lucide-svelte';
 	import * as Select from '$lib/components/ui/select';
 	import { type SuperValidated, superForm } from 'sveltekit-superforms';
-	import {
-		purchaseOrderItemSchema,
-		type PurchaseOrderItemCookie,
-		type PurchaseOrderCartItemSchema
-	} from '$lib/validation';
+	import { purchaseOrderItemSchema, type PurchaseOrderCartItemSchema } from '$lib/validation';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import type { SuperForm } from 'sveltekit-superforms';
 	import type { Supplier, Product } from '$lib/db/schema';
 
 	import { toast } from 'svelte-sonner';
+	import type { PurchaseOrderItemCookie } from '$lib/types';
 
 	interface Props {
 		data: SuperValidated<PurchaseOrderCartItemSchema>;

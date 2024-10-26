@@ -8,15 +8,12 @@ import {
 import type { Actions, PageServerLoad } from './$types';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import {
-	purchaseOrderCartItemSchema,
-	purchaseOrderItemSchema,
-	type PurchaseOrderItemCookie
-} from '$lib/validation';
+import { purchaseOrderCartItemSchema, purchaseOrderItemSchema } from '$lib/validation';
 import { suppliers } from '$lib/db/schema/supplier-schema';
 import { products } from '$lib/db/schema/product-schema';
 import { eq } from 'drizzle-orm';
 import type { Cookies } from '@sveltejs/kit';
+import type { PurchaseOrderItemCookie } from '$lib/types';
 
 export const load: PageServerLoad = async ({ cookies }) => {
 	const existingOrder = getPurchaseOrder(cookies);
@@ -86,7 +83,6 @@ export const actions: Actions = {
 		return { form };
 	},
 	createPurchaseOrder: async (event) => {
-		console.log('wew');
 		try {
 			const currentCart = getPurchaseOrder(event.cookies);
 

@@ -94,5 +94,12 @@ export const purchaseOrderItemRelations = relations(purchaseOrderItems, ({ one }
 // Types
 export type PurchaseOrderCart = typeof purchaseOrderCarts.$inferSelect;
 export type PurchaseOrderCartItem = typeof purchaseOrderCartItems.$inferSelect;
-export type PurchaseOrder = typeof purchaseOrders.$inferSelect;
-export type PurchaseOrderItem = typeof purchaseOrderItems.$inferSelect;
+export type PurchaseOrder = typeof purchaseOrders.$inferSelect & {
+	supplier: typeof suppliers.$inferSelect;
+	items: (typeof purchaseOrderItems.$inferSelect & {
+		product: typeof products.$inferSelect;
+	})[];
+};
+export type PurchaseOrderItem = typeof purchaseOrderItems.$inferSelect & {
+	product: typeof products.$inferSelect;
+};
