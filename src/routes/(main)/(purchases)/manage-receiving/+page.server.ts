@@ -4,8 +4,12 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { inventoryItems } from '$lib/db/schema/inventory-schema';
-export const load = async () => {
-	const purchaseOrders = await db.query.purchaseOrders.findMany({
+import { purchaseOrders } from '$lib/db/schema/purchase-order-schema';
+import { eq } from 'drizzle-orm/sql';
+
+export const load = async ({ url }) => {
+	const pendingPurchaseOrders = await db.query.purchaseOrders.findMany({
+		where: eq(purchaseOrders.poCode, url.searchParams.get('poCode') ?? ''),
 		with: {
 			items: {
 				with: {
@@ -15,7 +19,7 @@ export const load = async () => {
 			supplier: true
 		}
 	});
-	return { purchaseOrders };
+	return { purchaseOrders: pendingPurchaseOrders };
 };
 
 export const actions = {
@@ -25,6 +29,7 @@ export const actions = {
 			console.error('Purchase Order Form Validation Failed:', form.errors);
 			return fail(400, { form });
 		}
+
 		try {
 			await db.insert(inventoryItems).values(form.data);
 		} catch (error) {
