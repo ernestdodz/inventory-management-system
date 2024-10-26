@@ -4,22 +4,9 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Search } from 'lucide-svelte';
 
-	// Fake data for demonstration
-	const inventoryData = [
-		{ sku: 'SKU001', name: 'Product A', stockIn: 100, stockOut: 30, stockAvailable: 70 },
-		{ sku: 'SKU002', name: 'Product B', stockIn: 150, stockOut: 50, stockAvailable: 100 },
-		{ sku: 'SKU003', name: 'Product C', stockIn: 80, stockOut: 20, stockAvailable: 60 },
-		{ sku: 'SKU004', name: 'Product D', stockIn: 200, stockOut: 100, stockAvailable: 100 },
-		{ sku: 'SKU005', name: 'Product E', stockIn: 120, stockOut: 40, stockAvailable: 80 }
-	];
+	const { data } = $props();
 
-	let searchQuery = '';
-
-	$: filteredInventory = inventoryData.filter(
-		(item) =>
-			item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			item.sku.toLowerCase().includes(searchQuery.toLowerCase())
-	);
+	let searchQuery = $state('');
 </script>
 
 <div class="container mx-auto mt-12">
@@ -57,13 +44,13 @@
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
-					{#each filteredInventory as item}
+					{#each data.inventory as item}
 						<Table.Row>
-							<Table.Cell>{item.sku}</Table.Cell>
-							<Table.Cell>{item.name}</Table.Cell>
+							<Table.Cell>{item.product.sku}</Table.Cell>
+							<Table.Cell>{item.product.name}</Table.Cell>
 							<Table.Cell>{item.stockIn}</Table.Cell>
 							<Table.Cell>{item.stockOut}</Table.Cell>
-							<Table.Cell>{item.stockAvailable}</Table.Cell>
+							<Table.Cell>{item.stockIn}</Table.Cell>
 						</Table.Row>
 					{/each}
 				</Table.Body>

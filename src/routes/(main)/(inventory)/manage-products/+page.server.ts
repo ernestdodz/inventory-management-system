@@ -11,15 +11,13 @@ export const load: PageServerLoad = async () => {
 	const products = await db.query.products.findMany({
 		orderBy: (products, { desc }) => [desc(products.id)],
 		with: {
-			category: true,
-			supplier: true
+			category: true
 		}
 	});
 
 	return {
 		products,
 		categories: await db.query.productCategories.findMany(),
-		suppliers: await db.query.suppliers.findMany(),
 		addForm: await superValidate(zod(productSchema)),
 		editForm: await superValidate(zod(productSchema))
 	};

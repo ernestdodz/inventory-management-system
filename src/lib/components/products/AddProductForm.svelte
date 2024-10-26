@@ -16,10 +16,9 @@
 	interface Props {
 		data: SuperValidated<ProductSchema>;
 		categories: ProductCategory[];
-		suppliers: Supplier[];
 	}
 
-	let { data, categories, suppliers }: Props = $props();
+	let { data, categories }: Props = $props();
 
 	let open = $state(false);
 
@@ -30,7 +29,6 @@
 				toast.success(`Product added successfully`);
 				open = false;
 				selectedCategory = { label: '', value: 0 };
-				selectedSupplier = { label: '', value: 0 };
 
 				form.reset();
 			}
@@ -42,11 +40,6 @@
 	let selectedCategory = $state({
 		label: '',
 		value: $formData.categoryId
-	});
-
-	let selectedSupplier = $state({
-		label: '',
-		value: $formData.supplierId
 	});
 </script>
 
@@ -123,35 +116,6 @@
 						<Form.Control let:attrs>
 							<Form.Label>Price</Form.Label>
 							<Input {...attrs} bind:value={$formData.price} type="number" />
-						</Form.Control>
-						<Form.FieldErrors />
-					</Form.Field>
-					<Form.Field {form} name="supplierId">
-						<Form.Control let:attrs>
-							<Form.Label>Supplier</Form.Label>
-							<Select.Root
-								selected={selectedSupplier}
-								onSelectedChange={(v) => {
-									if (v) {
-										selectedSupplier = {
-											label: v.label ?? '',
-											value: v.value
-										};
-										$formData.supplierId = v.value;
-									}
-								}}
-							>
-								<Select.Trigger {...attrs}>
-									<Select.Value placeholder="Select a supplier" />
-								</Select.Trigger>
-								<Select.Content>
-									{#each suppliers as supplier}
-										<Select.Item value={supplier.id} label={supplier.name} />
-										{console.log(supplier)}
-									{/each}
-								</Select.Content>
-							</Select.Root>
-							<input hidden bind:value={$formData.supplierId} name={attrs.name} />
 						</Form.Control>
 						<Form.FieldErrors />
 					</Form.Field>

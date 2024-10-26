@@ -1,6 +1,5 @@
 import { serial, text, boolean, pgTable, integer } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm/relations';
-import { suppliers } from './supplier-schema';
 import { user } from './auth-schema';
 
 export const products = pgTable('product', {
@@ -12,9 +11,6 @@ export const products = pgTable('product', {
 		.notNull()
 		.references(() => productCategories.id),
 	price: integer('price').notNull(),
-	supplierId: integer('supplier_id')
-		.notNull()
-		.references(() => suppliers.id),
 	userId: text('user_id')
 		.notNull()
 		.references(() => user.id)
@@ -38,9 +34,5 @@ export const productRelations = relations(products, ({ one }) => ({
 	category: one(productCategories, {
 		fields: [products.categoryId],
 		references: [productCategories.id]
-	}),
-	supplier: one(suppliers, {
-		fields: [products.supplierId],
-		references: [suppliers.id]
 	})
 }));

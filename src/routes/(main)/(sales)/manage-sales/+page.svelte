@@ -31,7 +31,7 @@
 			>
 		</CardHeader>
 		<CardContent>
-			<AddSalesForm />
+			<AddSalesForm data={data.addForm} customers={data.customers} products={data.products} />
 		</CardContent>
 	</Card>
 
@@ -45,21 +45,23 @@
 					<Table.Row>
 						<Table.Head>Product</Table.Head>
 						<Table.Head class="text-right">Qty</Table.Head>
-						<Table.Head class="text-right">Price</Table.Head>
+						<Table.Head class="text-right">Selling Price</Table.Head>
 						<Table.Head class="text-right">Amount</Table.Head>
 						<Table.Head></Table.Head>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
-					{#each data.salesOrders as item, index}
+					{#each data.salesOrdersItems as item}
 						<Table.Row>
 							<Table.Cell>
-								<div>{item.name}</div>
-								<div class="text-sm text-gray-500">{item.sku}</div>
+								<div>{item.product.name}</div>
+								<div class="text-sm text-gray-500">{item.product.sku}</div>
 							</Table.Cell>
-							<Table.Cell class="text-right">{item.qty}</Table.Cell>
-							<Table.Cell class="text-right">${item.price.toFixed(2)}</Table.Cell>
-							<Table.Cell class="text-right">${item.amount.toFixed(2)}</Table.Cell>
+							<Table.Cell class="text-right">{item.quantity}</Table.Cell>
+							<Table.Cell class="text-right">${item.sellingPrice.toFixed(2)}</Table.Cell>
+							<Table.Cell class="text-right"
+								>${(item.sellingPrice * item.quantity).toFixed(2)}</Table.Cell
+							>
 							<Table.Cell>
 								<Button variant="destructive" size="icon" class="h-8 w-8" on:click={() => {}}>
 									<Trash2 />

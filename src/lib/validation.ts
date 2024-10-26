@@ -6,8 +6,7 @@ export const productSchema = z.object({
 	name: z.string().min(1),
 	description: z.string().min(1),
 	categoryId: z.number().int().positive(),
-	price: z.number().min(0),
-	supplierId: z.number().int().positive()
+	price: z.number().min(0)
 });
 
 export type ProductSchema = z.infer<typeof productSchema>;
@@ -73,3 +72,20 @@ export const purchaseOrderCartItemSchema = z.object({
 });
 
 export type PurchaseOrderCartItemSchema = z.infer<typeof purchaseOrderCartItemSchema>;
+
+export const salesOrderCartItemSchema = z.object({
+	customerId: z.number().int().positive(),
+	productId: z.number().int().positive(),
+	quantity: z.number().int().positive(),
+	sellingPrice: z.number().default(0)
+});
+
+export type SalesOrderCartItemSchema = z.infer<typeof salesOrderCartItemSchema>;
+
+export const inventoryItemSchema = z.object({
+	productId: z.number().int().positive(),
+	stockIn: z.number().int().positive(),
+	stockOut: z.number().int().positive()
+});
+
+export type InventoryItemSchema = z.infer<typeof inventoryItemSchema>;

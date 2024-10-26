@@ -5,7 +5,6 @@
 	import * as Select from '$lib/components/ui/select';
 	import { Input } from '$lib/components/ui/input';
 	import { toast } from 'svelte-sonner';
-	import type { Supplier } from '$lib/db/schema/supplier-schema';
 	import type { Product, ProductCategory } from '$lib/db/schema/product-schema';
 	import { type SuperValidated, superForm } from 'sveltekit-superforms';
 	import { productSchema, type ProductSchema } from '$lib/validation';
@@ -17,7 +16,6 @@
 		data: SuperValidated<ProductSchema>;
 		product: Product;
 		categories: ProductCategory[];
-		suppliers: Supplier[];
 	}>();
 
 	let open = $state(false);
@@ -50,11 +48,6 @@
 	let selectedCategory = $state({
 		label: product.category.name,
 		value: product.categoryId
-	});
-
-	let selectedSupplier = $state({
-		label: product.supplier.name,
-		value: product.supplierId
 	});
 
 	function handleDialogOpen() {
@@ -136,34 +129,6 @@
 						<Form.Control let:attrs>
 							<Form.Label>Price</Form.Label>
 							<Input {...attrs} bind:value={$formData.price} type="number" />
-						</Form.Control>
-						<Form.FieldErrors />
-					</Form.Field>
-					<Form.Field {form} name="supplierId">
-						<Form.Control let:attrs>
-							<Form.Label>Supplier</Form.Label>
-							<Select.Root
-								selected={selectedSupplier}
-								onSelectedChange={(v) => {
-									if (v) {
-										selectedSupplier = {
-											label: v.label ?? '',
-											value: v.value
-										};
-										$formData.supplierId = v.value;
-									}
-								}}
-							>
-								<Select.Trigger {...attrs}>
-									<Select.Value placeholder="Select a supplier" />
-								</Select.Trigger>
-								<Select.Content>
-									{#each suppliers as supplier}
-										<Select.Item value={supplier.id} label={supplier.name} />
-									{/each}
-								</Select.Content>
-							</Select.Root>
-							<input hidden bind:value={$formData.supplierId} name={attrs.name} />
 						</Form.Control>
 						<Form.FieldErrors />
 					</Form.Field>

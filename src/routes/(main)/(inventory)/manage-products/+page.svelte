@@ -45,11 +45,7 @@
 				{#if selectedProducts.length > 0}
 					<DeleteProductModal {selectedProducts} onSelect={() => (selectedProducts = [])} />
 				{/if}
-				<AddProductForm
-					data={data.addForm}
-					categories={data.categories}
-					suppliers={data.suppliers}
-				/>
+				<AddProductForm data={data.addForm} categories={data.categories} />
 			</div>
 		</div>
 	</div>
@@ -79,7 +75,6 @@
 							<Table.Head>Description</Table.Head>
 							<Table.Head>Category</Table.Head>
 							<Table.Head>Price</Table.Head>
-							<Table.Head>Supplier</Table.Head>
 							<Table.Head>Actions</Table.Head>
 						</Table.Row>
 					</Table.Header>
@@ -100,14 +95,9 @@
 								<Table.Cell>{product.description}</Table.Cell>
 								<Table.Cell>{product.category.name}</Table.Cell>
 								<Table.Cell>${product.price.toFixed(2)}</Table.Cell>
-								<Table.Cell>{product.supplier?.name ?? 'N/A'}</Table.Cell>
+
 								<Table.Cell>
-									<EditProductForm
-										{product}
-										data={data.editForm}
-										categories={data.categories}
-										suppliers={data.suppliers}
-									/>
+									<EditProductForm {product} data={data.editForm} categories={data.categories} />
 								</Table.Cell>
 							</Table.Row>
 						{/each}

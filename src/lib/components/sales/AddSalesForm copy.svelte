@@ -42,38 +42,38 @@
 </script>
 
 <form method="POST" action="?/addSalesItem" class="space-y-4" use:enhance>
-	<div class="w-96">
-		<Form.Field {form} name="customerId">
-			<Form.Control let:attrs>
-				<Form.Label>Customer</Form.Label>
-				<Select.Root
-					selected={selectedCustomer}
-					onSelectedChange={(v) => {
-						if (v) {
-							selectedCustomer = {
-								label: v.label ?? '',
-								value: v.value
-							};
-							$formData.customerId = v.value;
-						}
-					}}
-				>
-					<Select.Trigger {...attrs} class="w-full">
-						<Select.Value placeholder="Select customer" />
-					</Select.Trigger>
-					<Select.Content>
-						{#each customers as customer}
-							<Select.Item value={customer.id} label={customer.name} />
-						{/each}
-					</Select.Content>
-				</Select.Root>
-				<input hidden bind:value={$formData.customerId} name={attrs.name} />
-			</Form.Control>
-			<Form.FieldErrors class="text-sm" />
-		</Form.Field>
-	</div>
-
 	<div class="flex items-end space-x-4">
+		<div class="w-96">
+			<Form.Field {form} name="customerId">
+				<Form.Control let:attrs>
+					<Form.Label>Customer</Form.Label>
+					<Select.Root
+						selected={selectedCustomer}
+						onSelectedChange={(v) => {
+							if (v) {
+								selectedCustomer = {
+									label: v.label ?? '',
+									value: v.value
+								};
+								$formData.customerId = v.value;
+							}
+						}}
+					>
+						<Select.Trigger {...attrs} class="w-full">
+							<Select.Value placeholder="Select customer" />
+						</Select.Trigger>
+						<Select.Content>
+							{#each customers as customer}
+								<Select.Item value={customer.id} label={customer.name} />
+							{/each}
+						</Select.Content>
+					</Select.Root>
+					<input hidden bind:value={$formData.customerId} name={attrs.name} />
+				</Form.Control>
+				<Form.FieldErrors />
+			</Form.Field>
+		</div>
+
 		<div class="flex-grow">
 			<Form.Field {form} name="productId">
 				<Form.Control let:attrs>
@@ -101,7 +101,7 @@
 					</Select.Root>
 					<input hidden bind:value={$formData.productId} name={attrs.name} />
 				</Form.Control>
-				<Form.FieldErrors class="text-sm" />
+				<Form.FieldErrors />
 			</Form.Field>
 		</div>
 
@@ -109,9 +109,15 @@
 			<Form.Field {form} name="quantity">
 				<Form.Control let:attrs>
 					<Form.Label>Qty</Form.Label>
-					<Input {...attrs} type="number" bind:value={$formData.quantity} placeholder="Qty" />
+					<Input
+						{...attrs}
+						type="number"
+						bind:value={$formData.quantity}
+						min="1"
+						placeholder="Qty"
+					/>
 				</Form.Control>
-				<Form.FieldErrors class="text-sm" />
+				<Form.FieldErrors />
 			</Form.Field>
 		</div>
 
@@ -128,7 +134,7 @@
 						placeholder="Additional Price"
 					/>
 				</Form.Control>
-				<Form.FieldErrors class="text-sm" />
+				<Form.FieldErrors />
 			</Form.Field>
 		</div>
 
@@ -142,3 +148,7 @@
 		</Form.Button>
 	</div>
 </form>
+
+{#if $errors._errors}
+	<p class="mt-2 text-red-500">{$errors._errors[0]}</p>
+{/if}
