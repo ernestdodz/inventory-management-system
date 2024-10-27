@@ -2,6 +2,7 @@
 	import { Button, buttonVariants } from '../ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { enhance } from '$app/forms';
+	import { goto } from '$app/navigation';
 
 	let open = $state(false);
 	let isSubmitting = $state(false);
@@ -18,8 +19,8 @@
 				return async ({ result, update }) => {
 					isSubmitting = false;
 					await update();
-					window.location.reload();
 					if (result.type === 'success') {
+						goto('/manage-receiving');
 						open = false;
 					}
 				};
