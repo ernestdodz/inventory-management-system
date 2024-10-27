@@ -11,7 +11,7 @@
 	const { data } = $props();
 </script>
 
-<div class="container mx-auto mt-12 space-y-8">
+<div class="container mx-auto space-y-8">
 	<div>
 		<h1 class="text-2xl font-bold">Manage Product Categories</h1>
 		<p class="mt-4 text-sm text-muted-foreground">

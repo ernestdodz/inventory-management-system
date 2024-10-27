@@ -71,10 +71,10 @@
 </script>
 
 <div class="h-screen w-64 overflow-y-auto overflow-x-hidden border-r border-gray-300 bg-gray-100">
-	<div class="flex items-center justify-between border-b border-gray-300 px-5 py-8">
+	<div class="flex items-center justify-between px-5 py-8">
 		<div class="flex items-center">
 			<Box class="mr-2 h-6 w-6 text-gray-600" />
-			<h1 class="text-xl font-bold">Inventory MS</h1>
+			<h1 class="text-xl font-bold text-gray-700">Inventory MS</h1>
 		</div>
 		<div
 			class="-mr-8 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-gray-300"
@@ -82,14 +82,14 @@
 			<ChevronLeft class="h-5 w-5 text-gray-600" />
 		</div>
 	</div>
-	<nav class="mt-4 px-2">
+	<nav class="px-2">
 		{#each menuItems as item}
 			<div class="mb-2">
 				<a
-					class="flex w-full items-center justify-between px-4 py-2 text-gray-700 transition-colors duration-200 hover:bg-gray-200 hover:text-gray-900"
+					class="flex w-full items-center justify-between rounded-md px-4 py-2 text-gray-700 transition-colors duration-200 hover:bg-gray-200 hover:text-gray-900"
 					href={item.path}
 					onclick={() => toggleExpand(item.name)}
-					class:active={isActive(item)}
+					class:active={isActive(item) && !item.subItems}
 				>
 					<div class="flex items-center">
 						<item.icon class="mr-2 h-5 w-5" />
@@ -105,7 +105,7 @@
 					<div class="ml-4 mt-1 space-y-1">
 						{#each item.subItems as subItem}
 							<a
-								class="block w-full px-4 py-2 text-sm text-gray-600 transition-colors duration-200 hover:bg-gray-200 hover:text-gray-900"
+								class="block w-full rounded-md px-4 py-2 text-sm text-gray-600 transition-colors duration-200 hover:bg-gray-200 hover:text-gray-900"
 								href={subItem.path}
 								class:active={activePath === subItem.path}
 							>
@@ -121,10 +121,6 @@
 
 <style>
 	.active {
-		@apply font-semibold text-blue-600;
-	}
-
-	.h-1 {
-		transition: width 0.3s ease-out;
+		@apply bg-gray-200 font-semibold;
 	}
 </style>

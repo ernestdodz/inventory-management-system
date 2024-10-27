@@ -32,7 +32,7 @@
 	}
 </script>
 
-<div class="container mx-auto mt-12">
+<div class="container mx-auto">
 	<div class="mb-6">
 		<div class="flex items-center justify-between">
 			<div>

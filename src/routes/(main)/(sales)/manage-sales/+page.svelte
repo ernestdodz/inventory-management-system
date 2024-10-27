@@ -20,7 +20,7 @@
 	const { data } = $props();
 </script>
 
-<div class="container mx-auto mt-4 space-y-6">
+<div class="container mx-auto space-y-6">
 	<h1 class="mb-4 text-2xl font-bold">Sales Order</h1>
 
 	<Card>

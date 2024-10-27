@@ -1,14 +1,10 @@
 import { db } from '$lib/db';
-// import { purchaseOrders } from '$lib/db/schema';
 import { inventoryItems } from '$lib/db/schema/inventory-schema';
-
 import { purchaseOrders } from '$lib/db/schema/purchase-order-schema';
-
+import { error } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm/sql';
 
 export const load = async () => {
-	//
-
 	const pendingPurchaseOrders = await db.query.purchaseOrders.findMany({
 		where: eq(purchaseOrders.status, 'pending'),
 		with: {
@@ -36,16 +32,32 @@ export const actions = {
 			}
 		});
 
-		const mappedItems =
-			purchaseOrder?.items.map((item) => ({
-				productId: item.productId,
-				stockIn: item.quantity,
-				stockOut: 0
-			})) ?? [];
+		if (!purchaseOrder) {
+			error(404, 'Purchase order not found');
+		}
 
-		await db.insert(inventoryItems).values(mappedItems);
+		for (const item of purchaseOrder.items) {
+			const existingItem = await db.query.inventoryItems.findFirst({
+				where: eq(inventoryItems.productId, item.productId)
+			});
 
-		await db.delete(purchaseOrders).where(eq(purchaseOrders.id, purchaseOrder?.id ?? 0));
+			if (existingItem) {
+				await db
+					.update(inventoryItems)
+					.set({
+						stockIn: (existingItem.stockIn ?? 0) + item.quantity
+					})
+					.where(eq(inventoryItems.id, existingItem.id));
+			} else {
+				await db.insert(inventoryItems).values({
+					productId: item.productId,
+					stockIn: item.quantity,
+					stockOut: 0
+				});
+			}
+		}
+
+		await db.delete(purchaseOrders).where(eq(purchaseOrders.id, purchaseOrder.id));
 	}
 };
 

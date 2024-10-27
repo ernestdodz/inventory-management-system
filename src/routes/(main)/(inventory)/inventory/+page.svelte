@@ -9,7 +9,7 @@
 	let searchQuery = $state('');
 </script>
 
-<div class="container mx-auto mt-12">
+<div class="container mx-auto">
 	<div
 		class="flex flex-col space-y-4 pb-6 sm:flex-row sm:items-center sm:justify-between sm:space-y-0"
 	>
