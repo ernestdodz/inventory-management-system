@@ -13,7 +13,7 @@
 	import AddInventoryForm from '$lib/components/inventory/AddInventoryForm.svelte';
 	import type { PurchaseOrder, PurchaseOrderItem } from '$lib/db/schema/purchase-order-schema';
 
-	const { data } = $props();
+	let { data } = $props();
 
 	let selectedPO = $state({
 		label: '',
@@ -41,6 +41,10 @@
 	$effect(() => {
 		if (data.purchaseOrders.length > 0) {
 			loadPurchaseOrder(data.purchaseOrders[0].id);
+		} else {
+			selectedPurchaseOrder = null;
+			receivingItems = [];
+			selectedPO = { label: '', value: 0 };
 		}
 	});
 </script>
@@ -83,7 +87,7 @@
 	<Card>
 		<CardHeader>
 			<div class="flex items-center justify-between">
-				<CardTitle>Receiving Items</CardTitle>
+				<CardTitle data-sveltekit-reload>Receiving Items</CardTitle>
 				{#if selectedPurchaseOrder}
 					<div class="text-sm text-gray-500">SUPPLIER: {selectedPurchaseOrder.supplier.name}</div>
 				{:else}
