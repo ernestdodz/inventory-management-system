@@ -6,7 +6,9 @@ export const inventoryItems = pgTable('inventory_items', {
 	id: serial('id').primaryKey(),
 	productId: integer('product_id')
 		.notNull()
-		.references(() => products.id),
+		.references(() => products.id, {
+			onDelete: 'cascade'
+		}),
 	stockIn: integer('stock_in').default(0),
 	stockOut: integer('stock_out').default(0)
 });

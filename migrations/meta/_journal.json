@@ -141,6 +141,27 @@
       "when": 1729923751604,
       "tag": "0019_blushing_juggernaut",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1730089814943,
+      "tag": "0020_unusual_next_avengers",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1730090080586,
+      "tag": "0021_misty_stone_men",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1730090305644,
+      "tag": "0022_lonely_lady_ursula",
+      "breakpoints": true
     }
   ]
 }

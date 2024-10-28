@@ -26,7 +26,9 @@ export const salesOrderCartItems = pgTable('sales_order_cart_item', {
 	}),
 	productId: integer('product_id')
 		.notNull()
-		.references(() => products.id),
+		.references(() => products.id, {
+			onDelete: 'cascade'
+		}),
 	quantity: integer('quantity').notNull(),
 	sellingPrice: integer('selling_price').notNull()
 });

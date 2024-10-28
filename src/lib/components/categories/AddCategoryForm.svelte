@@ -8,7 +8,10 @@
 	import * as Select from '$lib/components/ui/select';
 	import { Loader2, Plus } from 'lucide-svelte';
 
-	let { data } = $props<{ data: SuperValidated<CategorySchema> }>();
+	interface Props {
+		data: SuperValidated<CategorySchema>;
+	}
+	let { data }: Props = $props();
 
 	const form = superForm(data, {
 		validators: zodClient(categorySchema),
@@ -19,7 +22,12 @@
 		}
 	});
 
-	const { form: formData, enhance, submitting, errors } = form;
+	const { form: formData, enhance, submitting } = form;
+
+	let selectedStatus = $state({
+		label: 'Active',
+		value: true
+	});
 </script>
 
 <form action="?/addCategory" method="POST" use:enhance>
@@ -33,13 +41,25 @@
 	<Form.Field {form} name="status">
 		<Form.Control let:attrs>
 			<Form.Label>Status</Form.Label>
-			<Select.Root {...attrs}>
+			<Select.Root
+				{...attrs}
+				selected={selectedStatus}
+				onSelectedChange={(v) => {
+					if (v) {
+						selectedStatus = {
+							label: v.label ?? '',
+							value: v.value
+						};
+						$formData.status = v.value;
+					}
+				}}
+			>
 				<Select.Trigger>
 					<Select.Value placeholder="Select a status" />
 				</Select.Trigger>
 				<Select.Content>
-					<Select.Item value="active">Active</Select.Item>
-					<Select.Item value="inactive">Inactive</Select.Item>
+					<Select.Item value={true}>Active</Select.Item>
+					<Select.Item value={false}>Inactive</Select.Item>
 				</Select.Content>
 				<input hidden bind:value={$formData.status} name={attrs.name} />
 			</Select.Root>
