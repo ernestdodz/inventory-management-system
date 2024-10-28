@@ -7,11 +7,16 @@
 	import { Input } from '$lib/components/ui/input';
 	import { MoreHorizontal, Search } from 'lucide-svelte';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import DeleteCategoryForm from '$lib/components/categories/DeleteCategoryForm.svelte';
+	import type { ProductCategory } from '$lib/db/schema';
 	const { data } = $props();
 
 	let editingId = $state<number | null>(null);
 	let isEditing = $derived((categoryId: number) => editingId === categoryId);
 	let editForm = $state<{ name: string; status: boolean }>({ name: '', status: false });
+
+	let deleteOpen = $state(false);
+	let selectedCategory = $state<ProductCategory | null>(null);
 </script>
 
 <div class="container mx-auto space-y-8">
@@ -48,7 +53,7 @@
 						<Input type="text" placeholder="Search categories..." class=" pl-8" />
 					</div>
 
-					<Button variant="outline" size="sm">Export</Button>
+					<Button variant="outline" size="sm" onclick={() => (deleteOpen = false)}>Export</Button>
 				</div>
 			</CardHeader>
 			<CardContent>
@@ -109,7 +114,14 @@
 															editForm = { name: category.name, status: category.status };
 														}}>Edit</DropdownMenu.Item
 													>
-													<DropdownMenu.Item>Delete</DropdownMenu.Item>
+													<DropdownMenu.Item
+														onclick={() => {
+															selectedCategory = category;
+															deleteOpen = true;
+														}}
+													>
+														Delete
+													</DropdownMenu.Item>
 												{/if}
 											</DropdownMenu.Group>
 										</DropdownMenu.Content>
@@ -123,3 +135,14 @@
 		</Card>
 	</div>
 </div>
+
+{#if selectedCategory}
+	<DeleteCategoryForm
+		isOpen={deleteOpen}
+		category={selectedCategory}
+		onClose={() => {
+			deleteOpen = false;
+			selectedCategory = null;
+		}}
+	/>
+{/if}

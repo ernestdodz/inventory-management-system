@@ -9,7 +9,9 @@ export const products = pgTable('product', {
 	description: text('description').notNull(),
 	categoryId: integer('category_id')
 		.notNull()
-		.references(() => productCategories.id),
+		.references(() => productCategories.id, {
+			onDelete: 'cascade'
+		}),
 	price: integer('price').notNull(),
 	userId: text('user_id')
 		.notNull()

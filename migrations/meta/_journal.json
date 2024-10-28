@@ -162,6 +162,13 @@
       "when": 1730090305644,
       "tag": "0022_lonely_lady_ursula",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1730107865130,
+      "tag": "0023_striped_skullbuster",
+      "breakpoints": true
     }
   ]
 }

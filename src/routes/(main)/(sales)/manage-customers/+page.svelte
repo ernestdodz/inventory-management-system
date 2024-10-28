@@ -3,10 +3,17 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
 	import { Input } from '$lib/components/ui/input';
-	import { Search } from 'lucide-svelte';
+	import { Search, MoreHorizontal } from 'lucide-svelte';
 	import AddCustomerForm from '$lib/components/customers/AddCustomerForm.svelte';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import type { Customer } from '$lib/db/schema/customer-schema';
 
 	const { data } = $props();
+
+	let editingId = $state<number | null>(null);
+
+	let deleteOpen = $state(false);
+	let selectedCustomer = $state<Customer | null>(null);
 </script>
 
 <div class="container mx-auto space-y-8">
@@ -61,8 +68,34 @@
 								<Table.Cell class="font-medium">{customer.name}</Table.Cell>
 								<Table.Cell>{customer.position}</Table.Cell>
 								<Table.Cell class="text-right">
-									<Button variant="outline" size="sm" class="mr-2">Edit</Button>
-									<Button variant="destructive" size="sm">Delete</Button>
+									<DropdownMenu.Root>
+										<DropdownMenu.Trigger>
+											<MoreHorizontal class="mr-4 h-4 w-4" />
+										</DropdownMenu.Trigger>
+										<DropdownMenu.Content>
+											<DropdownMenu.Group>
+												{#if editingId === customer.id}
+													<DropdownMenu.Item onclick={() => (editingId = null)}
+														>Save</DropdownMenu.Item
+													>
+												{:else}
+													<DropdownMenu.Item
+														onclick={() => {
+															editingId = customer.id;
+														}}>Edit</DropdownMenu.Item
+													>
+													<DropdownMenu.Item
+														onclick={() => {
+															selectedCustomer = customer;
+															deleteOpen = true;
+														}}
+													>
+														Delete
+													</DropdownMenu.Item>
+												{/if}
+											</DropdownMenu.Group>
+										</DropdownMenu.Content>
+									</DropdownMenu.Root>
 								</Table.Cell>
 							</Table.Row>
 						{/each}

@@ -8,7 +8,11 @@
 	import * as Select from '$lib/components/ui/select';
 	import { Loader2, Plus } from 'lucide-svelte';
 
-	let { data } = $props<{ data: SuperValidated<CustomerSchema> }>();
+	interface Props {
+		data: SuperValidated<CustomerSchema>;
+	}
+
+	let { data }: Props = $props();
 
 	const form = superForm(data, {
 		validators: zodClient(customerSchema),
@@ -19,7 +23,12 @@
 		}
 	});
 
-	const { form: formData, enhance, submitting, errors } = form;
+	const { form: formData, enhance, submitting } = form;
+
+	let selectedPosition = $state({
+		label: $formData.position,
+		value: $formData.position
+	});
 </script>
 
 <form action="?/addCustomer" method="POST" use:enhance>
@@ -33,7 +42,19 @@
 	<Form.Field {form} name="position">
 		<Form.Control let:attrs>
 			<Form.Label>Position</Form.Label>
-			<Select.Root {...attrs} selected={{ label: $formData.position, value: $formData.position }}>
+			<Select.Root
+				{...attrs}
+				selected={{ label: $formData.position, value: $formData.position }}
+				onSelectedChange={(v) => {
+					if (v) {
+						selectedPosition = {
+							label: (v.label as any) ?? 'GUEST',
+							value: v.value
+						};
+						$formData.position = v.value;
+					}
+				}}
+			>
 				<Select.Trigger>
 					<Select.Value placeholder="Select a position" />
 				</Select.Trigger>

@@ -37,16 +37,19 @@ export const actions: Actions = {
 
 		return { form };
 	},
-	deleteCategory: async (event) => {
-		const form = await superValidate(event, zod(categorySchema));
-		if (!form.valid) {
-			return fail(400, { form });
+	deleteCategory: async ({ request }) => {
+		const form = await request.formData();
+		const categoryId = form.get('categoryId');
+		if (!categoryId) {
+			return fail(400, { message: 'Category ID is required' });
 		}
-		if (!form.data.id) {
-			return fail(400, { form, message: 'Category ID is required' });
-		}
+		try {
+			await db.delete(productCategories).where(eq(productCategories.id, Number(categoryId)));
+		} catch (error) {
+			console.error('Failed', error);
 
-		await db.delete(productCategories).where(eq(productCategories.id, form.data.id));
-		return { form };
+			return fail(500, { message: 'Failed to delete category' });
+		}
+		return { success: true };
 	}
 };
