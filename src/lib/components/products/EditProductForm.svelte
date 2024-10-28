@@ -10,7 +10,7 @@
 	import { productSchema, type ProductSchema } from '$lib/validation';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import type { SuperForm } from 'sveltekit-superforms';
-	import { Loader2 } from 'lucide-svelte';
+	import { Loader2, MoreHorizontal } from 'lucide-svelte';
 
 	let { data, product, categories, suppliers } = $props<{
 		data: SuperValidated<ProductSchema>;
@@ -57,8 +57,8 @@
 </script>
 
 <Dialog.Root bind:open>
-	<Dialog.Trigger class={buttonVariants({ variant: 'default' })} onclick={handleDialogOpen}>
-		Edit
+	<Dialog.Trigger class={buttonVariants({ variant: 'ghost' })} onclick={handleDialogOpen}>
+		<MoreHorizontal class="h-4 w-4" />
 	</Dialog.Trigger>
 	<Dialog.Content class="max-w-3xl">
 		<Dialog.Header>
