@@ -1,5 +1,6 @@
 import type { LayoutServerLoad } from './$types';
 import { auth } from '$lib/auth';
+// import { redirect } from '@sveltejs/kit';
 
 export const load: LayoutServerLoad = async ({ request, locals }) => {
 	const session = await auth.api.getSession({
@@ -10,8 +11,8 @@ export const load: LayoutServerLoad = async ({ request, locals }) => {
 		return session;
 	};
 
-	if (session?.user) {
-		console.log('user is logged in');
+	if (!session?.user) {
+		// redirect(302, '/sign-in');
 	}
 
 	return { session };

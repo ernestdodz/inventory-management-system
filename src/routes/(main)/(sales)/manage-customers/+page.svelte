@@ -7,10 +7,9 @@
 	import AddCustomerForm from '$lib/components/customers/AddCustomerForm.svelte';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import type { Customer } from '$lib/db/schema/customer-schema';
+	import DeleteCustomerForm from '$lib/components/customers/DeleteCustomerForm.svelte';
 
 	const { data } = $props();
-
-	let editingId = $state<number | null>(null);
 
 	let deleteOpen = $state(false);
 	let selectedCustomer = $state<Customer | null>(null);
@@ -59,7 +58,7 @@
 						<Table.Row>
 							<Table.Head>Name</Table.Head>
 							<Table.Head>Position</Table.Head>
-							<Table.Head class="text-right">Actions</Table.Head>
+							<Table.Head class="text-right">Action</Table.Head>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
@@ -74,25 +73,14 @@
 										</DropdownMenu.Trigger>
 										<DropdownMenu.Content>
 											<DropdownMenu.Group>
-												{#if editingId === customer.id}
-													<DropdownMenu.Item onclick={() => (editingId = null)}
-														>Save</DropdownMenu.Item
-													>
-												{:else}
-													<DropdownMenu.Item
-														onclick={() => {
-															editingId = customer.id;
-														}}>Edit</DropdownMenu.Item
-													>
-													<DropdownMenu.Item
-														onclick={() => {
-															selectedCustomer = customer;
-															deleteOpen = true;
-														}}
-													>
-														Delete
-													</DropdownMenu.Item>
-												{/if}
+												<DropdownMenu.Item
+													onclick={() => {
+														selectedCustomer = customer;
+														deleteOpen = true;
+													}}
+												>
+													Delete
+												</DropdownMenu.Item>
 											</DropdownMenu.Group>
 										</DropdownMenu.Content>
 									</DropdownMenu.Root>
@@ -105,3 +93,14 @@
 		</Card>
 	</div>
 </div>
+
+{#if selectedCustomer}
+	<DeleteCustomerForm
+		customer={selectedCustomer}
+		isOpen={deleteOpen}
+		onClose={() => {
+			deleteOpen = false;
+			selectedCustomer = null;
+		}}
+	/>
+{/if}

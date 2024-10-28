@@ -8,7 +8,7 @@
 	import EditSupplierForm from '$lib/components/suppliers/EditSupplierForm.svelte';
 	import DeleteSupplierModal from '$lib/components/suppliers/DeleteSupplierModal.svelte';
 	import type { Supplier } from '$lib/db/schema';
-	import { Search, Filter, ChevronLeft, ChevronRight } from 'lucide-svelte';
+	import { Search, Filter, ChevronLeft, ChevronRight, Users } from 'lucide-svelte';
 
 	const { data } = $props();
 
@@ -93,8 +93,21 @@
 								<Table.Cell>{supplier.email}</Table.Cell>
 								<Table.Cell>{supplier.address}</Table.Cell>
 								<Table.Cell>{supplier.phone}</Table.Cell>
-								<Table.Cell>
-									<!-- <EditSupplierForm {supplier} data={data.editForm} /> -->
+								<Table.Cell></Table.Cell>
+							</Table.Row>
+						{:else}
+							<Table.Row>
+								<Table.Cell colspan={6}>
+									<div class="flex flex-col items-center justify-center py-10 text-center">
+										<div class="rounded-full bg-muted p-3">
+											<Users class="h-10 w-10 text-muted-foreground" />
+										</div>
+										<h3 class="mt-4 text-lg font-semibold">No suppliers found</h3>
+										<p class="mb-4 mt-2 text-sm text-muted-foreground">
+											Get started by adding your first supplier to the system.
+										</p>
+										<AddSupplierForm data={data.addForm} />
+									</div>
 								</Table.Cell>
 							</Table.Row>
 						{/each}

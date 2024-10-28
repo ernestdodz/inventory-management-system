@@ -2,7 +2,9 @@ import { z } from 'zod';
 
 export const productSchema = z.object({
 	id: z.number().int().optional(),
-	sku: z.string().min(1),
+	sku: z
+		.string()
+		.regex(/^SKU-[A-Z0-9]{3}$/, 'SKU must be in format SKU-XXX where X is alphanumeric'),
 	name: z.string().min(1),
 	description: z.string().min(1),
 	categoryId: z.number().int().positive(),

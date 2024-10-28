@@ -4,6 +4,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/db';
 import { customerSchema } from '$lib/validation';
 import { customers } from '$lib/db/schema';
+import { eq } from 'drizzle-orm';
 
 export const load: PageServerLoad = async () => {
 	const customers = await db.query.customers.findMany();
@@ -22,5 +23,20 @@ export const actions: Actions = {
 		}
 		await db.insert(customers).values(form.data);
 		return { form };
+	},
+	deleteCustomer: async ({ request }) => {
+		const form = await request.formData();
+		const customerId = form.get('customerId');
+		if (!customerId) {
+			return fail(400, { message: 'Customer ID is required' });
+		}
+		try {
+			await db.delete(customers).where(eq(customers.id, Number(customerId)));
+		} catch (error) {
+			console.error('Failed', error);
+
+			return fail(500, { message: 'Failed to delete category' });
+		}
+		return { success: true };
 	}
 };

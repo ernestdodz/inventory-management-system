@@ -1,0 +1,55 @@
+<script lang="ts">
+	import { Button, buttonVariants } from '../ui/button';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import { enhance } from '$app/forms';
+	import { Trash2 } from 'lucide-svelte';
+	import type { PurchaseOrderCartItem } from '$lib/db/schema/purchase-order-schema';
+	import { toast } from 'svelte-sonner';
+
+	let open = $state(false);
+	let isSubmitting = $state(false);
+
+	interface Props {
+		purchaseOrderItem: PurchaseOrderCartItem;
+	}
+	const { purchaseOrderItem }: Props = $props();
+</script>
+
+<Dialog.Root bind:open>
+	<Dialog.Trigger class={buttonVariants({ variant: 'ghost' })}
+		><Trash2 class="h-4 w-4" /></Dialog.Trigger
+	>
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title>Delete PO Item</Dialog.Title>
+			<Dialog.Description
+				>Are you sure you want to delete this purchase order item?</Dialog.Description
+			>
+		</Dialog.Header>
+		<form
+			action="?/deletePurchaseOrderItem"
+			method="POST"
+			use:enhance={() => {
+				isSubmitting = true;
+				return async function ({ result, update }) {
+					isSubmitting = false;
+					await update();
+					if (result.type === 'success') {
+						toast.success('Purchase order deleted successfully');
+						open = false;
+					}
+				};
+			}}
+		>
+			<input type="hidden" name="purchaseOrderItemId" value={purchaseOrderItem.id} />
+			<Dialog.Footer>
+				<Dialog.Close>
+					<Button variant="outline">Cancel</Button>
+				</Dialog.Close>
+				<Button type="submit" disabled={isSubmitting}>
+					{isSubmitting ? 'Deleting...' : 'Delete'}
+				</Button>
+			</Dialog.Footer>
+		</form>
+	</Dialog.Content>
+</Dialog.Root>

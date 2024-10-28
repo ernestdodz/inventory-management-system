@@ -11,10 +11,6 @@
 	import type { ProductCategory } from '$lib/db/schema';
 	const { data } = $props();
 
-	let editingId = $state<number | null>(null);
-	let isEditing = $derived((categoryId: number) => editingId === categoryId);
-	let editForm = $state<{ name: string; status: boolean }>({ name: '', status: false });
-
 	let deleteOpen = $state(false);
 	let selectedCategory = $state<ProductCategory | null>(null);
 </script>
@@ -62,38 +58,19 @@
 						<Table.Row>
 							<Table.Head>Name</Table.Head>
 							<Table.Head>Status</Table.Head>
-							<Table.Head class="text-right">Actions</Table.Head>
+							<Table.Head class="text-right">Action</Table.Head>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
 						{#each data.categories as category}
 							<Table.Row>
 								<Table.Cell class="font-medium">
-									{#if isEditing(category.id)}
-										<Input
-											type="text"
-											bind:value={editForm.name}
-											class="h-8 border-none bg-muted/50 px-2 focus-visible:ring-0 focus-visible:ring-offset-0"
-										/>
-									{:else}
-										{category.name}
-									{/if}
+									{category.name}
 								</Table.Cell>
 								<Table.Cell>
 									<div class="flex items-center space-x-2">
-										<Checkbox
-											checked={isEditing(category.id) ? editForm.status : category.status}
-											disabled={!isEditing(category.id)}
-										/>
-										<span>
-											{isEditing(category.id)
-												? editForm.status
-													? 'Active'
-													: 'Inactive'
-												: category.status
-													? 'Active'
-													: 'Inactive'}
-										</span>
+										<Checkbox checked={category.status} disabled />
+										<span>{category.status ? 'Active' : 'Inactive'}</span>
 									</div>
 								</Table.Cell>
 								<Table.Cell class="text-right">
@@ -103,26 +80,14 @@
 										</DropdownMenu.Trigger>
 										<DropdownMenu.Content>
 											<DropdownMenu.Group>
-												{#if isEditing(category.id)}
-													<DropdownMenu.Item onclick={() => (editingId = null)}
-														>Save</DropdownMenu.Item
-													>
-												{:else}
-													<DropdownMenu.Item
-														onclick={() => {
-															editingId = category.id;
-															editForm = { name: category.name, status: category.status };
-														}}>Edit</DropdownMenu.Item
-													>
-													<DropdownMenu.Item
-														onclick={() => {
-															selectedCategory = category;
-															deleteOpen = true;
-														}}
-													>
-														Delete
-													</DropdownMenu.Item>
-												{/if}
+												<DropdownMenu.Item
+													onclick={() => {
+														selectedCategory = category;
+														deleteOpen = true;
+													}}
+												>
+													Delete
+												</DropdownMenu.Item>
 											</DropdownMenu.Group>
 										</DropdownMenu.Content>
 									</DropdownMenu.Root>

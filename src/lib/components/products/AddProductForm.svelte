@@ -3,7 +3,6 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Input } from '$lib/components/ui/input';
 	import { toast } from 'svelte-sonner';
-	import type { Supplier } from '$lib/db/schema/supplier-schema';
 	import type { ProductCategory } from '$lib/db/schema/product-schema';
 	import { type SuperValidated, superForm } from 'sveltekit-superforms';
 	import { productSchema, type ProductSchema } from '$lib/validation';

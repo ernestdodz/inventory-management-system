@@ -1,12 +1,24 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { authClient } from '$lib/auth-client';
+	import { goto } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
 
-	function handleGitHubSignIn() {
-		authClient.signIn
-			.social({ provider: 'github' })
-			.catch(() => toast.error('Failed to sign in with GitHub.'));
+	async function handleGitHubSignIn() {
+		await authClient.signIn.email(
+			{
+				email: 'email@email.com',
+				password: 'password1234'
+			},
+			{
+				onSuccess: () => {
+					goto('/dashboard');
+				},
+				onError: (error) => {
+					// toast.error(error.);
+				}
+			}
+		);
 	}
 </script>
 

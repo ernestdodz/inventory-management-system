@@ -16,7 +16,6 @@
 	import type { SuperForm } from 'sveltekit-superforms';
 	import type { Supplier, Product } from '$lib/db/schema';
 
-	import { toast } from 'svelte-sonner';
 	import type { PurchaseOrderItemCookie } from '$lib/types';
 
 	interface Props {
@@ -32,11 +31,9 @@
 		validators: zodClient(purchaseOrderItemSchema),
 		onUpdated: ({ form: f }) => {
 			if (f.valid) {
-				toast.success(`Purchase order added successfully`);
+				// toast.success(`Purchase order added successfully`);
 				selectedProduct = { label: '', value: 0 };
 				$formData.supplierId = existingOrder?.supplierId ?? 0;
-			} else {
-				toast.error(`Failed to add purchase order`);
 			}
 		}
 	});
@@ -130,6 +127,7 @@
 					</Form.Field>
 				</div>
 
+				*
 				<div class="w-24">
 					<Form.Field {form} name="quantity">
 						<Form.Control let:attrs>

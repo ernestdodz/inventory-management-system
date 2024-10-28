@@ -1,14 +1,19 @@
 <script lang="ts">
 	import AddPurchaseOrderForm from '$lib/components/orders/AddPurchaseOrderForm.svelte';
+	import DeletePurchaseOrderForm from '$lib/components/orders/DeletePurchaseOrderForm.svelte';
 
 	import * as Table from '$lib/components/ui/table';
-	import { Button } from '$lib/components/ui/button';
 	import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '$lib/components/ui/card';
-	import { Trash2 } from 'lucide-svelte';
 
 	import CreatePurchaseOrderForm from '$lib/components/orders/CreatePurchaseOrderForm.svelte';
 
 	const { data } = $props();
+
+	const totalPurchaseOrderAmount = $derived(
+		data.purchaseOrderItems
+			.reduce((acc, item) => acc + item.product!.price * item.quantity, 0)
+			.toFixed(2)
+	);
 </script>
 
 <div class="container mx-auto space-y-6">
@@ -33,7 +38,6 @@
 						<Table.Head>Qty</Table.Head>
 						<Table.Head>Price</Table.Head>
 						<Table.Head>Amount</Table.Head>
-						<Table.Head>Action</Table.Head>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
@@ -47,9 +51,7 @@
 							<Table.Cell>${item.product?.price.toFixed(2) ?? '0.00'}</Table.Cell>
 							<Table.Cell>${(item.product!.price * item.quantity).toFixed(2)}</Table.Cell>
 							<Table.Cell>
-								<Button variant="destructive" size="icon" class="h-8 w-8" onclick={() => {}}>
-									<Trash2 class="h-4 w-4" />
-								</Button>
+								<DeletePurchaseOrderForm purchaseOrderItem={item} />
 							</Table.Cell>
 						</Table.Row>
 					{/each}
@@ -59,11 +61,7 @@
 		<CardFooter class="flex flex-col">
 			<hr class="my-4 w-full border-t border-gray-200" />
 			<div class="flex w-full items-center justify-between">
-				<div class="text-xl font-bold">
-					Total: ${data.purchaseOrderItems
-						.reduce((acc, item) => acc + item.product!.price * item.quantity, 0)
-						.toFixed(2)}
-				</div>
+				<div class="text-xl font-bold">Total: ${totalPurchaseOrderAmount}</div>
 				<div class="space-x-2">
 					<CreatePurchaseOrderForm />
 				</div>

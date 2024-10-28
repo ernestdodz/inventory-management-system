@@ -124,6 +124,24 @@ export const actions: Actions = {
 		}
 
 		return { message: 'Purchase order created successfully' };
+	},
+	deletePurchaseOrderItem: async ({ request }) => {
+		const formData = await request.formData();
+		const purchaseOrderItemId = formData.get('purchaseOrderItemId');
+
+		if (!purchaseOrderItemId) {
+			return fail(400, { message: 'Purchase order item ID is required' });
+		}
+		try {
+			await db
+				.delete(purchaseOrderCartItems)
+				.where(eq(purchaseOrderCartItems.id, Number(purchaseOrderItemId)));
+		} catch (error) {
+			console.error('Error deleting purchase order item:', error);
+			return fail(500, { message: 'An unexpected error occurred' });
+		}
+
+		return { message: 'Purchase order item deleted successfully' };
 	}
 };
 

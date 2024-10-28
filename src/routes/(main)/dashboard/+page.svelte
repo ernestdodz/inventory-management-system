@@ -99,10 +99,17 @@
 			.attr('y2', (d) => y(d))
 			.attr('stroke', 'hsl(var(--border))');
 	}
+
+	const { data } = $props();
+
+	const user = $derived(data.session?.user);
 </script>
 
 <div class="container mx-auto">
-	<h2 class="mb-6 text-2xl font-bold">Inventory Dashboard</h2>
+	<div class="flex items-center justify-between">
+		<h2 class="mb-6 text-2xl font-bold text-gray-700">Inventory Dashboard</h2>
+		<p class="text-md capitalize text-muted-foreground">Welcome, {user?.name}</p>
+	</div>
 
 	<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 		{#each overviewData as item}
