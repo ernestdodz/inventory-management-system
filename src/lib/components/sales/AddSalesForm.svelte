@@ -28,6 +28,7 @@
 				toast.success(`Item added successfully`);
 
 				selectedInventoryItem = { label: '', value: 0 };
+				selectedCustomer = { label: '', value: existingOrder?.customerId ?? 0 };
 				// $formData.customerId = existingOrder?.customerId ?? 0;
 			} else {
 				console.log('invalid');
@@ -49,6 +50,10 @@
 	});
 
 	let stockAvailable = $state<number | undefined>(undefined);
+
+	$effect(() => {
+		$formData.customerId = selectedCustomer.value;
+	});
 </script>
 
 <form method="POST" action="?/addSalesItem" class="space-y-8" use:enhance>
