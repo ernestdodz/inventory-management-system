@@ -1,1 +1,0 @@
-ALTER TABLE "sales_order_cart_item" ALTER COLUMN "cart_id" SET NOT NULL;

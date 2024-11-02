@@ -9,12 +9,14 @@
 	} from '$lib/components/ui/card';
 	import { Input } from '$lib/components/ui/input';
 	import { Loader2 } from 'lucide-svelte';
+	import { goto } from '$app/navigation';
 	import * as Select from '$lib/components/ui/select';
 	import { type SuperValidated, superForm } from 'sveltekit-superforms';
 	import { purchaseOrderItemSchema, type PurchaseOrderCartItemSchema } from '$lib/validation';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import type { SuperForm } from 'sveltekit-superforms';
 	import type { Supplier, Product } from '$lib/db/schema';
+	import { Plus } from 'lucide-svelte';
 
 	import type { PurchaseOrderItemCookie } from '$lib/types';
 
@@ -73,6 +75,10 @@
 								selected={selectedSupplier}
 								onSelectedChange={(v) => {
 									if (v) {
+										if (v.value === 0) {
+											goto('/manage-suppliers');
+											return;
+										}
 										selectedSupplier = {
 											label: v.label ?? '',
 											value: v.value
@@ -88,6 +94,13 @@
 								<Select.Content>
 									{#each suppliers as supplier}
 										<Select.Item value={supplier.id} label={supplier.name} />
+									{:else}
+										<Select.Item value={0}>
+											<div class="flex items-center gap-2">
+												<Plus class="h-4 w-4" />
+												<span>Add a supplier first</span>
+											</div>
+										</Select.Item>
 									{/each}
 								</Select.Content>
 								<input hidden bind:value={$formData.supplierId} name={attrs.name} />
@@ -105,6 +118,10 @@
 								selected={selectedProduct}
 								onSelectedChange={(v) => {
 									if (v) {
+										if (v.value === 0) {
+											goto('/manage-products');
+											return;
+										}
 										selectedProduct = {
 											label: v.label ?? '',
 											value: v.value
@@ -119,6 +136,13 @@
 								<Select.Content>
 									{#each products as product}
 										<Select.Item value={product.id} label={product.name} />
+									{:else}
+										<Select.Item value={0}>
+											<div class="flex items-center gap-2">
+												<Plus class="h-4 w-4" />
+												<span>Add a product first</span>
+											</div>
+										</Select.Item>
 									{/each}
 								</Select.Content>
 								<input hidden bind:value={$formData.productId} name={attrs.name} />

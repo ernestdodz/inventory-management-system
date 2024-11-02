@@ -31,7 +31,7 @@
 		}
 	});
 
-	const { form: formData, enhance, submitting, errors } = form;
+	const { form: formData, enhance, submitting } = form;
 </script>
 
 <Dialog.Root bind:open>

@@ -5,10 +5,10 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
 	import AddSupplierForm from '$lib/components/suppliers/AddSupplierForm.svelte';
-	import EditSupplierForm from '$lib/components/suppliers/EditSupplierForm.svelte';
 	import DeleteSupplierModal from '$lib/components/suppliers/DeleteSupplierModal.svelte';
 	import type { Supplier } from '$lib/db/schema';
 	import { Search, Filter, ChevronLeft, ChevronRight, Users } from 'lucide-svelte';
+	import EditSupplierForm from '$lib/components/suppliers/EditSupplierForm.svelte';
 
 	const { data } = $props();
 
@@ -74,7 +74,7 @@
 							<Table.Head>Email</Table.Head>
 							<Table.Head>Address</Table.Head>
 							<Table.Head>Phone</Table.Head>
-							<Table.Head>Actions</Table.Head>
+							<Table.Head></Table.Head>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
@@ -93,7 +93,9 @@
 								<Table.Cell>{supplier.email}</Table.Cell>
 								<Table.Cell>{supplier.address}</Table.Cell>
 								<Table.Cell>{supplier.phone}</Table.Cell>
-								<Table.Cell></Table.Cell>
+								<Table.Cell>
+									<EditSupplierForm {supplier} data={data.editForm} />
+								</Table.Cell>
 							</Table.Row>
 						{:else}
 							<Table.Row>

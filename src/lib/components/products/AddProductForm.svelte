@@ -11,6 +11,8 @@
 	import * as Select from '$lib/components/ui/select';
 	import type { SuperForm } from 'sveltekit-superforms';
 	import { Loader2 } from 'lucide-svelte';
+	import { goto } from '$app/navigation';
+	import { Plus } from 'lucide-svelte';
 
 	interface Props {
 		data: SuperValidated<ProductSchema>;
@@ -90,11 +92,15 @@
 								selected={selectedCategory}
 								onSelectedChange={(v) => {
 									if (v) {
-										selectedCategory = {
-											label: v.label ?? '',
-											value: v.value
-										};
-										$formData.categoryId = v.value;
+										if (v.value === 0) {
+											goto('/manage-categories');
+										} else {
+											selectedCategory = {
+												label: v.label ?? '',
+												value: v.value
+											};
+											$formData.categoryId = v.value;
+										}
 									}
 								}}
 							>
@@ -104,6 +110,13 @@
 								<Select.Content>
 									{#each categories as category}
 										<Select.Item value={category.id} label={category.name} />
+									{:else}
+										<Select.Item value={0}>
+											<div class="flex items-center gap-2">
+												<Plus class="h-4 w-4" />
+												<span>Add a category first</span>
+											</div>
+										</Select.Item>
 									{/each}
 								</Select.Content>
 							</Select.Root>

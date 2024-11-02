@@ -5,11 +5,25 @@
 
 	let barChartElement: HTMLDivElement;
 
+	const { data } = $props();
+
 	const overviewData = $state([
-		{ title: 'Total Products', value: '1,234', change: '+20.1% from last month', icon: '📦' },
-		{ title: 'Low Stock Items', value: '15', change: '-5 from last week', icon: '⚠️' },
-		{ title: 'Pending Orders', value: '23', change: '+3 since yesterday', icon: '🛒' },
-		{ title: 'Total Value', value: '$573,842', change: '+2.5% this month', icon: '💰' }
+		{
+			title: 'Total Products',
+			value: data.totalProducts,
+			icon: '📦'
+		},
+		{
+			title: 'Low Stock Items',
+			value: data.totalLowStockItems,
+			icon: '⚠️'
+		},
+		{
+			title: 'Pending Orders',
+			value: data.totalPendingPurchaseOrders,
+			icon: '🛒'
+		},
+		{ title: 'Total Value', value: '$573,842', icon: '💰' }
 	]);
 
 	type ChartDataPoint = { date: Date; value: number };
@@ -100,8 +114,6 @@
 			.attr('stroke', 'hsl(var(--border))');
 	}
 
-	const { data } = $props();
-
 	const user = $derived(data.session?.user);
 </script>
 
@@ -120,7 +132,6 @@
 						<span class="text-2xl">{item.icon}</span>
 					</div>
 					<p class="text-2xl font-bold">{item.value}</p>
-					<p class="text-xs text-muted-foreground">{item.change}</p>
 				</Card.Content>
 			</Card.Root>
 		{/each}

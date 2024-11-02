@@ -12,11 +12,12 @@
 	import type { SuperForm } from 'sveltekit-superforms';
 	import { Edit, Loader2 } from 'lucide-svelte';
 
-	let { data, product, categories, suppliers } = $props<{
+	interface Props {
 		data: SuperValidated<ProductSchema>;
 		product: Product;
 		categories: ProductCategory[];
-	}>();
+	}
+	let { data, product, categories }: Props = $props();
 
 	let open = $state(false);
 
@@ -40,13 +41,12 @@
 			name: product.name,
 			description: product.description,
 			categoryId: product.categoryId,
-			price: product.price,
-			supplierId: product.supplierId
+			price: product.price
 		}));
 	}
 
 	let selectedCategory = $state({
-		label: product.category.name,
+		label: categories.find((c) => c.id === product.categoryId)?.name ?? '',
 		value: product.categoryId
 	});
 

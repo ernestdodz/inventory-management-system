@@ -1,1 +1,0 @@
-ALTER TABLE "purchase_order" ALTER COLUMN "po_code" SET NOT NULL;
