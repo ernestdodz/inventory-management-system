@@ -10,6 +10,8 @@
 	import type { Customer } from '$lib/db/schema/customer-schema';
 	import type { SalesCartOrderItemCookie } from '$lib/types';
 	import type { InventoryItem } from '$lib/db/schema/inventory-schema';
+	import { goto } from '$app/navigation';
+	import { Plus } from 'lucide-svelte';
 
 	interface Props {
 		data: SuperValidated<SalesOrderCartItemSchema>;
@@ -61,6 +63,10 @@
 					selected={selectedCustomer}
 					onSelectedChange={(v) => {
 						if (v) {
+							if (v.value === 0) {
+								goto('/manage-customers');
+								return;
+							}
 							selectedCustomer = {
 								label: v.label ?? '',
 								value: v.value
@@ -76,6 +82,13 @@
 					<Select.Content>
 						{#each customers as customer}
 							<Select.Item value={customer.id} label={customer.name} />
+						{:else}
+							<Select.Item value={0}>
+								<div class="flex items-center gap-2">
+									<Plus class="h-4 w-4" />
+									<span>Add a customer first</span>
+								</div>
+							</Select.Item>
 						{/each}
 					</Select.Content>
 				</Select.Root>
@@ -89,11 +102,15 @@
 		<div class="min-h-[80px] flex-grow">
 			<Form.Field {form} name="inventoryItemId">
 				<Form.Control let:attrs>
-					<Form.Label>Product</Form.Label>
+					<Form.Label>Inventory Item</Form.Label>
 					<Select.Root
 						selected={selectedInventoryItem}
 						onSelectedChange={(v) => {
 							if (v) {
+								if (v.value === 0) {
+									goto('/manage-orders');
+									return;
+								}
 								selectedInventoryItem = {
 									label: v.label ?? '',
 									value: v.value
@@ -105,11 +122,18 @@
 						}}
 					>
 						<Select.Trigger {...attrs} class="w-full">
-							<Select.Value placeholder="Select product" />
+							<Select.Value placeholder="Select inventory item" />
 						</Select.Trigger>
 						<Select.Content>
 							{#each inventoryItems as inventoryItem}
 								<Select.Item value={inventoryItem.id} label={inventoryItem.product.name} />
+							{:else}
+								<Select.Item value={0}>
+									<div class="flex items-center gap-2">
+										<Plus class="h-4 w-4" />
+										<span>Purchase an item first</span>
+									</div>
+								</Select.Item>
 							{/each}
 						</Select.Content>
 					</Select.Root>
