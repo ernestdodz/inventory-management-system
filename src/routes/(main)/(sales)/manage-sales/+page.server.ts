@@ -60,6 +60,8 @@ export const actions = {
 			const availableStock = (existingItem?.stockIn ?? 0) - (existingItem?.stockOut ?? 0);
 
 			if (availableStock < form.data.quantity) {
+				console.log('insufficient stock');
+
 				return fail(400, {
 					form,
 					message: `Insufficient stock. Available: ${availableStock}, Requested: ${form.data.quantity}`

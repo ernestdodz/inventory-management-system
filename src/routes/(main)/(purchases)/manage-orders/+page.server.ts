@@ -161,6 +161,5 @@ const getPurchaseOrder = (cookies: Cookies) => {
 	const existingOrder: PurchaseOrderItemCookie | undefined = orderCookie
 		? JSON.parse(orderCookie)
 		: undefined;
-
 	return existingOrder;
 };

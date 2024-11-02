@@ -28,7 +28,9 @@
 				toast.success(`Item added successfully`);
 
 				selectedInventoryItem = { label: '', value: 0 };
-				$formData.customerId = existingOrder?.customerId ?? 0;
+				// $formData.customerId = existingOrder?.customerId ?? 0;
+			} else {
+				console.log('invalid');
 			}
 		}
 	});
@@ -46,12 +48,7 @@
 		value: 0
 	});
 
-	$effect(() => {
-		$formData.customerId = existingOrder?.customerId ?? 0;
-		$formData.sellingPrice = inventoryItem?.product.price ?? 0;
-	});
-
-	let inventoryItem = $state<InventoryItem | null>(null);
+	let stockAvailable = $state<number | undefined>(undefined);
 </script>
 
 <form method="POST" action="?/addSalesItem" class="space-y-8" use:enhance>
@@ -117,7 +114,11 @@
 								};
 								$formData.inventoryItemId = v.value;
 
-								inventoryItem = inventoryItems.find((i) => i.id === v.value) ?? null;
+								const item = inventoryItems.find((i) => i.id === v.value);
+								stockAvailable = (item?.stockIn ?? 0) - (item?.stockOut ?? 0);
+
+								$formData.sellingPrice = item?.product.price ?? 0;
+								$formData.quantity = stockAvailable;
 							}
 						}}
 					>
@@ -146,9 +147,14 @@
 		<div class="min-h-[80px] w-40">
 			<Form.Field {form} name="quantity">
 				<Form.Control let:attrs>
-					<Form.Label>Qty: {inventoryItem ? `(Available ${inventoryItem.stockIn})` : ''}</Form.Label
-					>
-					<Input {...attrs} type="number" bind:value={$formData.quantity} placeholder="Qty" />
+					<Form.Label>Qty: {stockAvailable ? `(Available ${stockAvailable})` : ''}</Form.Label>
+					<Input
+						{...attrs}
+						type="number"
+						bind:value={$formData.quantity}
+						placeholder="Qty"
+						disabled={stockAvailable === 0}
+					/>
 					<Form.FieldErrors class="mt-1 text-sm" />
 				</Form.Control>
 			</Form.Field>
