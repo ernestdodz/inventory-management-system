@@ -97,10 +97,11 @@ export const actions: Actions = {
 				return fail(400, { message: 'Cart not found' });
 			}
 
+			const randomCode = Math.random().toString(36).substring(2, 5).toUpperCase();
 			const purchaseOrderId = await db
 				.insert(purchaseOrders)
 				.values({
-					poCode: 'PO-XY12',
+					poCode: `PO-${randomCode}`,
 					supplierId: cart.supplierId
 				})
 				.returning({ id: purchaseOrders.id })

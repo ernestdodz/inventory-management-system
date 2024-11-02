@@ -2,6 +2,8 @@
 	import * as Table from '$lib/components/ui/table';
 	import { Input } from '$lib/components/ui/input';
 	import { Search } from 'lucide-svelte';
+	import { Package } from 'lucide-svelte';
+	import { Button } from '$lib/components/ui/button';
 
 	const { data } = $props();
 
@@ -47,6 +49,24 @@
 					<Table.Cell>{item.stockIn}</Table.Cell>
 					<Table.Cell>{item.stockOut}</Table.Cell>
 					<Table.Cell>{(item.stockIn ?? 0) - (item.stockOut ?? 0)}</Table.Cell>
+				</Table.Row>
+			{:else}
+				<Table.Row>
+					<Table.Cell colspan={5}>
+						<div class="flex flex-col items-center justify-center py-10 text-center">
+							<div class="rounded-full bg-muted p-3">
+								<Package class="h-10 w-10 text-muted-foreground" />
+							</div>
+							<h3 class="mt-4 text-lg font-semibold">No inventory items found</h3>
+							<p class="mb-4 mt-2 text-sm text-muted-foreground">
+								Get started by purchasing products and receiving purchase orders.
+							</p>
+							<div class="flex gap-2">
+								<Button variant="outline" href="/manage-orders">Purchase Products</Button>
+								<Button href="/manage-receiving">Receive Orders</Button>
+							</div>
+						</div>
+					</Table.Cell>
 				</Table.Row>
 			{/each}
 		</Table.Body>
