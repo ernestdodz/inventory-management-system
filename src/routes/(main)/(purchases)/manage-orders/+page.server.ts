@@ -125,7 +125,7 @@ export const actions: Actions = {
 
 		return { message: 'Purchase order created successfully' };
 	},
-	deletePurchaseOrderItem: async ({ request }) => {
+	deletePurchaseOrderItem: async ({ request, cookies }) => {
 		const formData = await request.formData();
 		const purchaseOrderItemId = formData.get('purchaseOrderItemId');
 
@@ -133,9 +133,19 @@ export const actions: Actions = {
 			return fail(400, { message: 'Purchase order item ID is required' });
 		}
 		try {
+			const currentCart = getPurchaseOrder(cookies);
+
+			const cartItems = await db.query.purchaseOrderCartItems.findMany({
+				where: eq(purchaseOrderCartItems.cartId, currentCart?.id ?? 0)
+			});
+
 			await db
 				.delete(purchaseOrderCartItems)
 				.where(eq(purchaseOrderCartItems.id, Number(purchaseOrderItemId)));
+
+			if (cartItems.length === 1) {
+				cookies.delete('purchase_cart_session', { path: '/' });
+			}
 		} catch (error) {
 			console.error('Error deleting purchase order item:', error);
 			return fail(500, { message: 'An unexpected error occurred' });

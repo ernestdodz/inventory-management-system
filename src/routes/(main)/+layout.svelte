@@ -11,7 +11,7 @@
 
 {#if $navigating}
 	<div class="fixed left-0 right-0 top-0 z-50 h-1 overflow-hidden bg-gray-100">
-		<div class="animate-progress-loop h-full w-full bg-blue-500" />
+		<div class="animate-progress-loop h-full w-full bg-blue-500"></div>
 	</div>
 {/if}
 

@@ -46,7 +46,7 @@
 					<Table.Cell>{item.product.name}</Table.Cell>
 					<Table.Cell>{item.stockIn}</Table.Cell>
 					<Table.Cell>{item.stockOut}</Table.Cell>
-					<Table.Cell>{item.stockIn}</Table.Cell>
+					<Table.Cell>{(item.stockIn ?? 0) - (item.stockOut ?? 0)}</Table.Cell>
 				</Table.Row>
 			{/each}
 		</Table.Body>

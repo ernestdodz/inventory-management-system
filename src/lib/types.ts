@@ -5,8 +5,14 @@ interface IPurchaseOrderItemCookie {
 
 export type PurchaseOrderItemCookie = IPurchaseOrderItemCookie | undefined;
 
-export interface IReceiveOrderItemCookie {
-	poCode: string;
+interface ISalesCartOrderItemCookie {
+	id: number;
+	customerId: number;
 }
 
-export type ReceiveOrderItemCookie = IReceiveOrderItemCookie | undefined;
+export type SalesCartOrderItemCookie = ISalesCartOrderItemCookie | undefined;
+// export interface IReceiveOrderItemCookie {
+// 	poCode: string;
+// }
+
+// export type ReceiveOrderItemCookie = IReceiveOrderItemCookie | undefined;

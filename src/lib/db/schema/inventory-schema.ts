@@ -1,6 +1,7 @@
 import { integer, pgTable, serial } from 'drizzle-orm/pg-core';
 import { products } from './product-schema';
 import { relations } from 'drizzle-orm';
+import type { Product } from './product-schema';
 
 export const inventoryItems = pgTable('inventory_items', {
 	id: serial('id').primaryKey(),
@@ -19,3 +20,7 @@ export const inventoryItemRelations = relations(inventoryItems, ({ one }) => ({
 		references: [products.id]
 	})
 }));
+
+export type InventoryItem = typeof inventoryItems.$inferSelect & {
+	product: Product;
+};

@@ -33,6 +33,7 @@
 			if (f.valid) {
 				// toast.success(`Purchase order added successfully`);
 				selectedProduct = { label: '', value: 0 };
+
 				$formData.supplierId = existingOrder?.supplierId ?? 0;
 			}
 		}
@@ -127,7 +128,6 @@
 					</Form.Field>
 				</div>
 
-				*
 				<div class="w-24">
 					<Form.Field {form} name="quantity">
 						<Form.Control let:attrs>

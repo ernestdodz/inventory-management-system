@@ -71,8 +71,8 @@ export type PurchaseOrderCartItemSchema = z.infer<typeof purchaseOrderCartItemSc
 
 export const salesOrderCartItemSchema = z.object({
 	customerId: z.number().int().positive(),
-	productId: z.number().int().positive(),
-	quantity: z.number().int().positive(),
+	inventoryItemId: z.number().int().positive(),
+	quantity: z.number().int().positive().default(1),
 	sellingPrice: z.number().default(0)
 });
 

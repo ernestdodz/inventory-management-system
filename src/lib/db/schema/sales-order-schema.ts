@@ -1,6 +1,6 @@
 import { serial, pgTable, integer, timestamp, pgEnum } from 'drizzle-orm/pg-core';
 import { customers } from './customer-schema';
-import { products } from './product-schema';
+import { inventoryItems } from './inventory-schema';
 import { relations } from 'drizzle-orm/relations';
 
 export const salesOrderStatusEnum = pgEnum('sales_order_status', [
@@ -21,12 +21,14 @@ export const salesOrderCarts = pgTable('sales_order_cart', {
 
 export const salesOrderCartItems = pgTable('sales_order_cart_item', {
 	id: serial('id').primaryKey(),
-	cartId: integer('cart_id').references(() => salesOrderCarts.id, {
-		onDelete: 'cascade'
-	}),
-	productId: integer('product_id')
+	cartId: integer('cart_id')
 		.notNull()
-		.references(() => products.id, {
+		.references(() => salesOrderCarts.id, {
+			onDelete: 'cascade'
+		}),
+	inventoryItemId: integer('inventory_item_id')
+		.notNull()
+		.references(() => inventoryItems.id, {
 			onDelete: 'cascade'
 		}),
 	quantity: integer('quantity').notNull(),
@@ -38,12 +40,17 @@ export const salesOrderCartItemsRelations = relations(salesOrderCartItems, ({ on
 		fields: [salesOrderCartItems.cartId],
 		references: [salesOrderCarts.id]
 	}),
-	product: one(products, {
-		fields: [salesOrderCartItems.productId],
-		references: [products.id]
+	inventoryItem: one(inventoryItems, {
+		fields: [salesOrderCartItems.inventoryItemId],
+		references: [inventoryItems.id]
 	})
 }));
 
+export const salesOrderCartRelations = relations(salesOrderCarts, ({ many }) => ({
+	items: many(salesOrderCartItems)
+}));
+
+export type SalesOrderCartItem = typeof salesOrderCartItems.$inferSelect;
 // export const salesOrders = pgTable('sales_order', {
 // 	id: serial('id').primaryKey(),
 // 	customerId: integer('customer_id')

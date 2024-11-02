@@ -1,7 +1,6 @@
 <script lang="ts">
 	import * as Table from '$lib/components/ui/table';
-	import { Button } from '$lib/components/ui/button';
-	import { Trash2 } from 'lucide-svelte';
+	import DeleteSalesItemForm from '$lib/components/sales/DeleteSalesForm.svelte';
 
 	import {
 		Card,
@@ -12,10 +11,7 @@
 		CardDescription
 	} from '$lib/components/ui/card';
 	import AddSalesForm from '$lib/components/sales/AddSalesForm.svelte';
-
-	// function calculateTotal() {
-	// 	return orderItems.reduce((total, item) => total + item.amount, 0).toFixed(2);
-	// }
+	import CreateSalesForm from '$lib/components/sales/CreateSalesForm.svelte';
 
 	const { data } = $props();
 </script>
@@ -31,7 +27,12 @@
 			>
 		</CardHeader>
 		<CardContent>
-			<AddSalesForm data={data.addForm} customers={data.customers} products={data.products} />
+			<AddSalesForm
+				data={data.addForm}
+				customers={data.customers}
+				inventoryItems={data.inventoryItems}
+				existingOrder={data.existingOrder}
+			/>
 		</CardContent>
 	</Card>
 
@@ -44,9 +45,9 @@
 				<Table.Header>
 					<Table.Row>
 						<Table.Head>Product</Table.Head>
-						<Table.Head class="text-right">Qty</Table.Head>
-						<Table.Head class="text-right">Selling Price</Table.Head>
-						<Table.Head class="text-right">Amount</Table.Head>
+						<Table.Head>Qty</Table.Head>
+						<Table.Head>Selling Price</Table.Head>
+						<Table.Head>Amount</Table.Head>
 						<Table.Head></Table.Head>
 					</Table.Row>
 				</Table.Header>
@@ -54,18 +55,14 @@
 					{#each data.salesOrdersItems as item}
 						<Table.Row>
 							<Table.Cell>
-								<div>{item.product.name}</div>
-								<div class="text-sm text-gray-500">{item.product.sku}</div>
+								<div>{item.inventoryItem.product.name}</div>
+								<div class="text-sm text-gray-500">{item.inventoryItem.product.sku}</div>
 							</Table.Cell>
-							<Table.Cell class="text-right">{item.quantity}</Table.Cell>
-							<Table.Cell class="text-right">${item.sellingPrice.toFixed(2)}</Table.Cell>
-							<Table.Cell class="text-right"
-								>${(item.sellingPrice * item.quantity).toFixed(2)}</Table.Cell
-							>
+							<Table.Cell>{item.quantity}</Table.Cell>
+							<Table.Cell>${item.sellingPrice.toFixed(2)}</Table.Cell>
+							<Table.Cell>${(item.sellingPrice * item.quantity).toFixed(2)}</Table.Cell>
 							<Table.Cell>
-								<Button variant="destructive" size="icon" class="h-8 w-8" on:click={() => {}}>
-									<Trash2 />
-								</Button>
+								<DeleteSalesItemForm salesOrderItem={item} />
 							</Table.Cell>
 						</Table.Row>
 					{/each}
@@ -76,7 +73,7 @@
 			<hr class="my-4 w-full border-t border-gray-200" />
 			<div class="flex w-full items-center justify-between">
 				<div class="text-xl font-bold">Total: $149</div>
-				<Button class="w-32">Create Order</Button>
+				<CreateSalesForm />
 			</div>
 		</CardFooter>
 	</Card>
