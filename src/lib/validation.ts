@@ -8,7 +8,7 @@ export const productSchema = z.object({
 	name: z.string().min(1),
 	description: z.string().min(1),
 	categoryId: z.number().int().positive(),
-	price: z.number().min(0)
+	price: z.number().min(0.01).default(0.01)
 });
 
 export type ProductSchema = z.infer<typeof productSchema>;

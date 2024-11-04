@@ -1,9 +1,10 @@
 import { db } from '$lib/db';
 import type { PageServerLoad } from './$types';
 import { products, inventoryItems, purchaseOrderItems, salesOrderCartItems } from '$lib/db/schema';
+import { desc } from 'drizzle-orm';
 
 export const load: PageServerLoad = async () => {
-	const LOW_STOCK_THRESHOLD = 50; // Define threshold for low stock
+	const LOW_STOCK_THRESHOLD = 50;
 
 	const inventories = await db.select().from(inventoryItems);
 
@@ -22,11 +23,23 @@ export const load: PageServerLoad = async () => {
 	const totalPendingPurchaseOrders = pendingPurchaseOrders.length;
 	const totalPendingSalesOrders = pendingSalesOrders.length;
 
+	const recentActivities = await db.query.inventoryItems.findMany({
+		orderBy: desc(inventoryItems.updatedAt),
+		with: {
+			user: true,
+			product: true
+		},
+		limit: 5
+	});
+
+	console.log(recentActivities);
+
 	return {
 		totalProducts,
 		totalInventories,
 		totalPendingPurchaseOrders,
 		totalPendingSalesOrders,
-		totalLowStockItems // Add the new count to the return object
+		totalLowStockItems,
+		recentActivities
 	};
 };

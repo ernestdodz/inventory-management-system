@@ -1,7 +1,7 @@
 import { db } from '$lib/db';
 import { inventoryItems } from '$lib/db/schema/inventory-schema';
 import { purchaseOrders } from '$lib/db/schema/purchase-order-schema';
-import { error } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm/sql';
 
 export const load = async () => {
@@ -20,7 +20,7 @@ export const load = async () => {
 };
 
 export const actions = {
-	addInventory: async ({ url }) => {
+	addInventory: async ({ url, locals }) => {
 		try {
 			const purchaseOrder = await db.query.purchaseOrders.findFirst({
 				where: eq(purchaseOrders.poCode, url.searchParams.get('poCode') ?? ''),
@@ -31,6 +31,12 @@ export const actions = {
 
 			if (!purchaseOrder) {
 				error(404, 'Purchase order not found');
+			}
+
+			const session = await locals.getSession();
+
+			if (!session?.user) {
+				return fail(401, { message: 'Unauthorized' });
 			}
 
 			for (const item of purchaseOrder.items) {
@@ -49,7 +55,8 @@ export const actions = {
 					await db.insert(inventoryItems).values({
 						productId: item.productId,
 						stockIn: item.quantity,
-						stockOut: 0
+						stockOut: 0,
+						userId: session.user.id
 					});
 				}
 			}

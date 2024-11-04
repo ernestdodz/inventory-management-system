@@ -103,15 +103,15 @@
 			<DropdownMenu>
 				<DropdownMenuTrigger>
 					<Avatar>
-						<AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-						<AvatarFallback>CN</AvatarFallback>
+						<AvatarImage src={user?.image ?? ''} alt={user?.name ?? 'User'} />
+						<AvatarFallback>{user?.name?.[0]?.toUpperCase() ?? 'U'}</AvatarFallback>
 					</Avatar>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent align="end">
 					<div class="flex items-center gap-2 p-2">
 						<Avatar class="h-8 w-8">
-							<AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-							<AvatarFallback>CN</AvatarFallback>
+							<AvatarImage src={user?.image ?? ''} alt={user?.name ?? 'User'} />
+							<AvatarFallback>{user?.name?.[0]?.toUpperCase() ?? 'U'}</AvatarFallback>
 						</Avatar>
 						<div class="flex flex-col">
 							<span class="text-sm font-medium">{user?.name ?? 'User'}</span>
