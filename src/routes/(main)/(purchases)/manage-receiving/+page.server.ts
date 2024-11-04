@@ -48,7 +48,8 @@ export const actions = {
 					await db
 						.update(inventoryItems)
 						.set({
-							stockIn: (existingItem.stockIn ?? 0) + item.quantity
+							stockIn: (existingItem.stockIn ?? 0) + item.quantity,
+							updatedAt: new Date()
 						})
 						.where(eq(inventoryItems.id, existingItem.id));
 				} else {

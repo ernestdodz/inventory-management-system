@@ -1,10 +1,7 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
-	import { Avatar, AvatarFallback, AvatarImage } from '$lib/components/ui/avatar';
 
 	const { data } = $props();
-
-	console.log(data.recentActivities[0].product.name);
 
 	const overviewData = $state([
 		{
@@ -70,11 +67,8 @@
 								</div>
 							</div>
 							<div class="ml-auto font-medium">
-								{activity.stockIn
-									? activity.stockIn > 0
-										? `+${activity.stockIn}`
-										: activity.stockIn
-									: ''}
+								<span class="text-green-600">+{activity.stockIn}</span>
+								<span class="text-red-600">-{activity.stockOut}</span>
 							</div>
 						</div>
 					{/each}

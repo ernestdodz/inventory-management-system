@@ -119,6 +119,12 @@ export const actions = {
 				error(404, 'Sales order not found');
 			}
 
+			const session = await event.locals.getSession();
+
+			if (!session?.user) {
+				return fail(401, { message: 'Unauthorized' });
+			}
+
 			for (const item of salesOrder.items) {
 				const existingItem = await db.query.inventoryItems.findFirst({
 					where: eq(inventoryItems.id, item.inventoryItemId)
@@ -128,7 +134,8 @@ export const actions = {
 					await db
 						.update(inventoryItems)
 						.set({
-							stockOut: (existingItem?.stockOut ?? 0) + item.quantity
+							stockOut: (existingItem?.stockOut ?? 0) + item.quantity,
+							updatedAt: new Date()
 						})
 						.where(eq(inventoryItems.id, existingItem?.id ?? 0));
 				}
