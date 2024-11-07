@@ -27,8 +27,6 @@
 				toast.success('Supplier updated successfully');
 				open = false;
 			}
-
-			console.log('Form Updated:', form);
 		}
 	});
 

@@ -50,8 +50,6 @@ export const actions = {
 			return fail(400, { form });
 		}
 
-		console.log(form.data);
-
 		try {
 			const existingItem = await db.query.inventoryItems.findFirst({
 				where: eq(inventoryItems.id, form.data.inventoryItemId)
@@ -89,8 +87,6 @@ export const actions = {
 					}
 				);
 			}
-
-			console.log('succesfully added');
 
 			await db.insert(salesOrderCartItems).values({
 				cartId: orderCartId ?? 0,

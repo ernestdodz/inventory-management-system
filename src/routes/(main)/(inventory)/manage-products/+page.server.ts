@@ -42,10 +42,8 @@ export const actions: Actions = {
 			return fail(401, { form, message: 'Unauthorized' });
 		}
 
-		console.log('Adding Product:', form.data);
 		try {
 			await db.insert(products).values({ ...form.data, userId: session?.user.id });
-			console.log('New Product Added:');
 			return { success: true, form };
 		} catch (error) {
 			console.error('Error adding product:', error);
@@ -86,7 +84,6 @@ export const actions: Actions = {
 
 		for (const id of productIds) {
 			await db.delete(products).where(eq(products.id, Number(id)));
-			// console.log('Deleted Product:', deletedProduct);
 		}
 
 		return { success: true };

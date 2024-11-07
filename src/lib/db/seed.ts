@@ -1,10 +1,24 @@
+import { createAuthClient } from 'better-auth/svelte';
 import { db } from '$lib/db';
 import { productCategories, products, customers, suppliers } from '$lib/db/schema';
 
-const USER_ID = 'dEz53MziksVmwla69ZVam';
+export const authClient = createAuthClient({
+	baseURL: 'http://localhost:5173'
+});
 
 async function seed() {
 	try {
+		// Seed users
+		const user = await authClient.signUp.email({
+			name: 'Demo User',
+			email: 'demo@demo.com',
+			password: 'password123'
+		});
+
+		if (!user || !user.data) {
+			process.exit(1);
+		}
+
 		// Seed product categories
 		const [category1, category2] = await db
 			.insert(productCategories)
@@ -22,7 +36,7 @@ async function seed() {
 				description: 'High-performance laptop',
 				categoryId: category1.id,
 				price: 999,
-				userId: USER_ID
+				userId: user.data.user.id
 			},
 			{
 				sku: 'FURN-001',
@@ -30,7 +44,7 @@ async function seed() {
 				description: 'Ergonomic office chair',
 				categoryId: category2.id,
 				price: 199,
-				userId: USER_ID
+				userId: user.data.user.id
 			}
 		]);
 

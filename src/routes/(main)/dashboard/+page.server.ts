@@ -32,8 +32,6 @@ export const load: PageServerLoad = async () => {
 		limit: 5
 	});
 
-	console.log(recentActivities);
-
 	return {
 		totalProducts,
 		totalInventories,

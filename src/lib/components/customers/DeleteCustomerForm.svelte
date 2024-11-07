@@ -18,8 +18,6 @@
 	const closeDialog = () => {
 		return onClose();
 	};
-
-	console.log(customer);
 </script>
 
 <Dialog.Root bind:open={isOpen} onOpenChange={closeDialog}>
