@@ -3,12 +3,17 @@ import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { productSchema } from '$lib/validation';
 import { db } from '$lib/db';
-import { eq } from 'drizzle-orm';
+import { eq, or, ilike } from 'drizzle-orm';
 import { products } from '$lib/db/schema/product-schema.js';
 import type { PageServerLoad, Actions } from './$types';
 
-export const load: PageServerLoad = async () => {
-	const products = await db.query.products.findMany({
+export const load: PageServerLoad = async ({ url }) => {
+	const searchQuery = url.searchParams.get('search') || '';
+
+	const productList = await db.query.products.findMany({
+		where: searchQuery
+			? or(ilike(products.name, `%${searchQuery}%`), ilike(products.sku, `%${searchQuery}%`))
+			: undefined,
 		orderBy: (products, { desc }) => [desc(products.id)],
 		with: {
 			category: true
@@ -16,10 +21,11 @@ export const load: PageServerLoad = async () => {
 	});
 
 	return {
-		products,
+		products: productList,
 		categories: await db.query.productCategories.findMany(),
 		addForm: await superValidate(zod(productSchema)),
-		editForm: await superValidate(zod(productSchema))
+		editForm: await superValidate(zod(productSchema)),
+		search: searchQuery
 	};
 };
 

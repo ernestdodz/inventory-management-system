@@ -4,10 +4,22 @@
 	import { Search } from 'lucide-svelte';
 	import { Package } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
+	import { goto } from '$app/navigation';
 
 	const { data } = $props();
 
-	let searchQuery = $state('');
+	let searchQuery = $state(data.search);
+
+	function handleSubmit(e: SubmitEvent) {
+		e.preventDefault();
+		const params = new URLSearchParams();
+		if (searchQuery) {
+			params.set('search', searchQuery);
+		} else {
+			params.delete('search');
+		}
+		goto(`?${params.toString()}`, { replaceState: true });
+	}
 </script>
 
 <div class="container mx-auto">
@@ -17,16 +29,18 @@
 			<p class="text-muted-foreground">Manage your product inventory</p>
 		</div>
 		<div class="relative">
-			<Search
-				class="absolute left-3 top-1/2 -translate-y-1/2 transform text-muted-foreground"
-				size={20}
-			/>
-			<Input
-				type="search"
-				placeholder="Search inventory..."
-				bind:value={searchQuery}
-				class="w-[250px] pl-10 sm:w-[300px]"
-			/>
+			<form onsubmit={handleSubmit}>
+				<Search
+					class="absolute left-3 top-1/2 -translate-y-1/2 transform text-muted-foreground"
+					size={20}
+				/>
+				<Input
+					type="search"
+					placeholder="Search inventory..."
+					bind:value={searchQuery}
+					class="w-[250px] pl-10 sm:w-[300px]"
+				/>
+			</form>
 		</div>
 	</div>
 	<hr class="my-4 border-t border-gray-200" />

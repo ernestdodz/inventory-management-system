@@ -59,7 +59,7 @@
 				</Select.Trigger>
 				<Select.Content>
 					<Select.Item value={true}>Active</Select.Item>
-					<Select.Item value={false}>Inactive</Select.Item>
+					<!-- <Select.Item value={false}>Inactive</Select.Item> -->
 				</Select.Content>
 				<input hidden bind:value={$formData.status} name={attrs.name} />
 			</Select.Root>
