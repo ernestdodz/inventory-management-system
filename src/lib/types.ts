@@ -1,4 +1,4 @@
-interface IPurchaseOrderItemCookie {
+export interface IPurchaseOrderItemCookie {
 	id: number;
 	supplierId: number;
 }
